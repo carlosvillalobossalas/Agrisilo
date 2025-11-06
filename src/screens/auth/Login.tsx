@@ -17,7 +17,7 @@ const Login = () => {
             }}>
                 <Text variant='headlineMedium' style={{ fontWeight: 'bold' }}>Agrisilo</Text>
                 <View style={{ width: '100%', alignItems: 'center', gap: 10 }}>
-                    <TextInput left={<TextInput.Icon icon="account-outline" />} label={'Cédula'} mode='outlined' style={{ width: '90%', }} />
+                    <TextInput left={<TextInput.Icon icon="account-outline" />} label={'Correo'} mode='outlined' style={{ width: '90%', }} />
                     <TextInput left={<TextInput.Icon icon="lock-outline" />} label={'Contraseña'} mode='outlined' style={{ width: '90%', }} />
                     <Button style={{ alignSelf: 'flex-end' }}>
                         <Text style={{ fontWeight: 'bold', color: colors.primary }} >
