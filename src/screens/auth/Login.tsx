@@ -15,7 +15,7 @@ const Login = () => {
                 backgroundColor: colors.background,
                 gap: 20,
             }}>
-                <Text variant='headlineMedium' style={{ fontWeight: 'bold' }}>Iniciar sesión</Text>
+                <Text variant='headlineMedium' style={{ fontWeight: 'bold' }}>Agrisilo</Text>
                 <View style={{ width: '100%', alignItems: 'center', gap: 10 }}>
                     <TextInput left={<TextInput.Icon icon="account-outline" />} label={'Cédula'} mode='outlined' style={{ width: '90%', }} />
                     <TextInput left={<TextInput.Icon icon="lock-outline" />} label={'Contraseña'} mode='outlined' style={{ width: '90%', }} />
