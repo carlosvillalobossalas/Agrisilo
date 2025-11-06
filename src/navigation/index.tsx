@@ -79,14 +79,16 @@ export default function Navigation() {
 
 
     const handleAuthStateChanged = (res: any) => {
-        dispatch(loginStart())
-        const userResponse = res as FirebaseAuthTypes.User | null;
-        const userJson = userResponse?.toJSON()
-        console.log("🚀 ~ handleAuthStateChanged ~ user:", userJson)
-        if (userJson) {
-            dispatch(loginSuccess(userJson))
-        } else {
-            dispatch(loginFailure('No user logged in'))
+        if (!user) {
+            dispatch(loginStart())
+            const userResponse = res as FirebaseAuthTypes.User | null;
+            const userJson = userResponse?.toJSON()
+            console.log("🚀 ~ handleAuthStateChanged ~ user:", userJson)
+            if (userJson) {
+                dispatch(loginSuccess(userJson))
+            } else {
+                dispatch(loginFailure('No user logged in'))
+            }
         }
 
         if (initializing) setInitializing(false)
