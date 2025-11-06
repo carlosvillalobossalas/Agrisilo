@@ -1,5 +1,4 @@
 import React from 'react'
-import { useNavigation } from '@react-navigation/native'
 import { Keyboard, Pressable, View } from 'react-native'
 import { Button, Text, TextInput, useTheme, } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -7,7 +6,6 @@ import { signIn } from '../../services/auth'
 
 const Login = () => {
     const { colors, fonts } = useTheme()
-    const navigation = useNavigation()
     return (
         <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss} accessible={false}>
             <SafeAreaView style={{

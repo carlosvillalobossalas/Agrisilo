@@ -1,14 +1,23 @@
-import { getAuth, signInWithEmailAndPassword } from "@react-native-firebase/auth"
+import { getAuth, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth"
 
 const auth = getAuth();
 
 export const signIn = async (email: string, password: string) => {
     try {
-        console.log('iniciando sesion')
-        
         const res = await signInWithEmailAndPassword(auth, email, password);
-        console.log(res.user)
+        return res.user.toJSON();
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
+}
+
+export const logoutFB = async () => {
+    try {
+        await signOut(auth);
+        return true
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+
 }
