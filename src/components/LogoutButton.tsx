@@ -23,7 +23,7 @@ const LogoutButton = () => {
                 icon={"logout"}
                 onPress={handleLogout}
                 mode="contained"
-                size={15}
+                size={22}
             />
         </View>
     )
