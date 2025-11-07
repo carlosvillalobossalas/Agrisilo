@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlice';
 import CalendarScreen from '../screens/calendar/CalendarScreen';
 import LogoutButton from '../components/LogoutButton';
+import { IconButton, useTheme } from 'react-native-paper';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -40,13 +41,34 @@ const AppTabs = createBottomTabNavigator({
         headerRight: () => (
             <LogoutButton />
         ),
-        headerTitleStyle: {
-            fontSize: 28,
-        },
-        tabBarShowLabel: false,
+        headerStyle: {
+            height: 110
+        }
     },
     screens: {
-        Calendar: CalendarScreen
+        Calendar: {
+            screen: CalendarScreen,
+            options: {
+                headerTitle: 'Calendario',
+                tabBarLabel: 'Calendario',
+                tabBarIcon: ({ focused }) => {
+                    const { colors } = useTheme()
+                    return (
+                        <IconButton
+                            icon="calendar"
+                            // size={34}
+                            iconColor={focused ? colors.primary : colors.outline}
+                        />
+                    )
+                }
+            }
+        },
+        a: {
+            screen: CalendarScreen,
+            options: {
+                headerTitle: 'Calendario',
+            }
+        }
     }
 })
 
