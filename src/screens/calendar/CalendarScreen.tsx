@@ -1,11 +1,12 @@
 import React, { useCallback, useRef, useState } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { Calendar, ICalendarEventBase, Mode, modeToNum } from 'react-native-big-calendar'
-import { FAB, IconButton, SegmentedButtons, Text } from 'react-native-paper'
+import { FAB, IconButton, Portal, SegmentedButtons, Text } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { View } from 'react-native'
 import dayjs from 'dayjs'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
+import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 
 const events: Array<ICalendarEventBase & { color?: string }> = [
   {
@@ -55,6 +56,7 @@ const CalendarScreen = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+
 
   const handleSheetChanges = useCallback((index: number) => {
     // index === -1 significa que está cerrado
@@ -163,7 +165,8 @@ const CalendarScreen = () => {
       {/* Filtros */}
       <CustomBottomFilterSheet ref={bottomSheetRef} handleSheetChanges={handleSheetChanges} />
 
-      <FAB icon={'plus'} style={{ position: 'absolute', bottom: 10, right: 20 }} size='small' onPress={() => { }} />
+      {/* FAB */}
+      <CustomCalendarFAB />
     </SafeAreaView >
   );
 
