@@ -111,12 +111,23 @@ const AppTabs = createBottomTabNavigator({
 
 
 const RootStack = createNativeStackNavigator({
-    initialRouteName: 'App',
+    initialRouteName: 'Calendar',
     screenOptions: {
         headerShown: false,
+        headerBackButtonDisplayMode: 'minimal'
     },
     screens: {
-        App: AppTabs
+        Calendar: AppTabs,
+        ClientScreen: {
+            screen: ClientScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Agregar Cliente',
+            },
+        },
     }
 })
 
