@@ -11,6 +11,9 @@ import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlic
 import CalendarScreen from '../screens/calendar/CalendarScreen';
 import LogoutButton from '../components/LogoutButton';
 import { IconButton, useTheme } from 'react-native-paper';
+import ToDoScreen from '../screens/todos/ToDoScreen';
+import ClientScreen from '../screens/clients/ClientScreen';
+import ConfigScreen from '../screens/config/ConfigScreen';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -36,38 +39,71 @@ const AuthStack = createNativeStackNavigator({
 })
 
 const AppTabs = createBottomTabNavigator({
-    initialRouteName: 'Calendar',
+    initialRouteName: 'Calendario',
     screenOptions: {
-        headerRight: () => (
-            <LogoutButton />
-        ),
+        // headerRight: () => (
+        //     <LogoutButton />
+        // ),
         headerStyle: {
             height: 110
         }
     },
     screens: {
-        Calendar: {
+        Calendario: {
             screen: CalendarScreen,
             options: {
                 headerShown: false,
-                headerTitle: 'Calendario',
-                tabBarLabel: 'Calendario',
                 tabBarIcon: ({ focused }) => {
                     const { colors } = useTheme()
                     return (
                         <IconButton
                             icon="calendar"
-                            // size={34}
                             iconColor={focused ? colors.primary : colors.outline}
                         />
                     )
                 }
             }
         },
-        a: {
-            screen: CalendarScreen,
+        Tareas: {
+            screen: ToDoScreen,
             options: {
-                headerTitle: 'Calendario',
+                tabBarIcon: ({ focused }) => {
+                    const { colors } = useTheme()
+                    return (
+                        <IconButton
+                            icon="format-list-checks"
+                            iconColor={focused ? colors.primary : colors.outline}
+                        />
+                    )
+                }
+            }
+        },
+        Clientes: {
+            screen: ClientScreen,
+            options: {
+                tabBarIcon: ({ focused }) => {
+                    const { colors } = useTheme()
+                    return (
+                        <IconButton
+                            icon="account-group-outline"
+                            iconColor={focused ? colors.primary : colors.outline}
+                        />
+                    )
+                }
+            }
+        },
+        Config: {
+            screen: ConfigScreen,
+            options: {
+                tabBarIcon: ({ focused }) => {
+                    const { colors } = useTheme()
+                    return (
+                        <IconButton
+                            icon="cog"
+                            iconColor={focused ? colors.primary : colors.outline}
+                        />
+                    )
+                }
             }
         }
     }
