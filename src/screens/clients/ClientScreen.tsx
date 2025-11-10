@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
+import CustomColorPicker from '../../components/CustomColorPicker'
 
 const ClientScreen = () => {
+  const [selectedColor, setSelectedColor] = useState('#FF0000')
   return (
-    <View style={{ flex: 1, paddingVertical: 30, paddingHorizontal: 15, gap: 10 }}>
+    <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
 
       <View style={{ gap: 5 }}>
         <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
@@ -29,6 +31,11 @@ const ClientScreen = () => {
       <View style={{ gap: 5 }}>
         <Text style={{ fontWeight: 'bold' }}>Ubicación del terreno</Text>
         <TextInput placeholder='Ingrese la ubicación del terreno' mode='outlined' right={<TextInput.Icon icon={'map-marker-outline'} />} />
+      </View>
+
+      <View style={{ gap: 5 }}>
+        <Text style={{ fontWeight: 'bold' }}>Color</Text>
+        <CustomColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
       </View>
 
       <Button style={{ marginTop: 'auto', paddingVertical: 5 }} mode='contained'>
