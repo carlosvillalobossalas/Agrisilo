@@ -155,6 +155,10 @@ const CalendarScreen = () => {
           backgroundColor: event.color,
           borderRadius: 6,
         })}
+        onPressEvent={(pressEvent) => {
+          setDate(pressEvent.start)
+          setMode('day')
+        }}
         onPressCell={(pressDate) => {
           setDate(pressDate)
           setMode('day')
