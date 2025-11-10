@@ -13,6 +13,7 @@ import ToDoScreen from '../screens/todos/ToDoScreen';
 import ClientScreen from '../screens/clients/ClientScreen';
 import ConfigScreen from '../screens/config/ConfigScreen';
 import ServiceScreen from '../screens/services/ServiceScreen';
+import ClientsScreen from '../screens/clients/ClientsScreen';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -78,7 +79,7 @@ const AppTabs = createBottomTabNavigator({
             }
         },
         Clientes: {
-            screen: ClientScreen,
+            screen: ClientsScreen,
             options: {
                 tabBarIcon: ({ focused }) => {
                     const { colors } = useTheme()
