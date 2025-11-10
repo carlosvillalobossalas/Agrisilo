@@ -49,6 +49,7 @@ const AppTabs = createBottomTabNavigator({
         Calendar: {
             screen: CalendarScreen,
             options: {
+                headerShown: false,
                 headerTitle: 'Calendario',
                 tabBarLabel: 'Calendario',
                 tabBarIcon: ({ focused }) => {
