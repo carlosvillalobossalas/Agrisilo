@@ -1,9 +1,17 @@
 import React, { useState } from 'react'
 import { FAB, Portal } from 'react-native-paper'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 
 const CustomCalendarFAB = () => {
+
+    const navigation = useNavigation()
+    const isFocused = useIsFocused()
+
     const [openFAB, setOpenFAB] = useState(false)
     const onFABStateChange = ({ open }: any) => setOpenFAB(open);
+
+    if (!isFocused) return null
+
     return (
         <Portal >
             <FAB.Group
@@ -16,7 +24,7 @@ const CustomCalendarFAB = () => {
                         label: 'Agregar tarea', icon: 'calendar-plus', onPress: () => { }
                     },
                     {
-                        label: 'Agregar cliente', icon: 'account-group-outline', onPress: () => { }
+                        label: 'Agregar cliente', icon: 'account-group-outline', onPress: () => { navigation.navigate('ClientScreen') }
                     },
                     {
                         label: 'Agregar servicio', icon: 'account-wrench-outline', onPress: () => { }
