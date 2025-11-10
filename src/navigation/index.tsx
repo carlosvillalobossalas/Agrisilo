@@ -14,6 +14,7 @@ import ClientScreen from '../screens/clients/ClientScreen';
 import ConfigScreen from '../screens/config/ConfigScreen';
 import ServiceScreen from '../screens/services/ServiceScreen';
 import ClientsScreen from '../screens/clients/ClientsScreen';
+import StatusScreen from '../status/StatusScreen';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -136,6 +137,16 @@ const RootStack = createNativeStackNavigator({
             options: {
                 headerShown: true,
                 headerTitle: 'Agregar Servicio',
+            },
+        },
+        StatusScreen: {
+            screen: StatusScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Agregar Estado',
             },
         },
     }

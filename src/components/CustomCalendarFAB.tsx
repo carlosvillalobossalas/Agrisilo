@@ -27,10 +27,10 @@ const CustomCalendarFAB = () => {
                         label: 'Agregar cliente', icon: 'account-group-outline', onPress: () => { navigation.navigate('ClientScreen') }
                     },
                     {
-                        label: 'Agregar servicio', icon: 'account-wrench-outline', onPress: () => { }
+                        label: 'Agregar servicio', icon: 'account-wrench-outline', onPress: () => { navigation.navigate('ServiceScreen') }
                     },
                     {
-                        label: 'Agregar estado', icon: 'check', onPress: () => { }
+                        label: 'Agregar estado', icon: 'check', onPress: () => { navigation.navigate('StatusScreen') }
                     },
                     {
                         label: 'Exportar PDF', icon: 'file-pdf-box', onPress: () => { }
