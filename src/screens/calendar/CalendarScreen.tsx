@@ -155,6 +155,10 @@ const CalendarScreen = () => {
           backgroundColor: event.color,
           borderRadius: 6,
         })}
+        onPressCell={(pressDate) => {
+          setDate(pressDate)
+          setMode('day')
+        }}
         eventMinHeightForMonthView={20}
         maxVisibleEventCount={2}
         moreLabel={`+{moreCount} más`}
