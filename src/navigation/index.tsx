@@ -14,7 +14,9 @@ import ClientScreen from '../screens/clients/ClientScreen';
 import ConfigScreen from '../screens/config/ConfigScreen';
 import ServiceScreen from '../screens/services/ServiceScreen';
 import ClientsScreen from '../screens/clients/ClientsScreen';
-import StatusScreen from '../status/StatusScreen';
+import StatusScreen from '../screens/status/StatusScreen';
+import { getAllStatus } from '../services/status';
+import { setAllStatus } from '../store/slices/statusSlice';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -190,6 +192,15 @@ export default function Navigation() {
         const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
         return subscriber;
     }, [])
+
+    useEffect(() => {
+        const unsubscribe = getAllStatus((data) => {
+            console.log('status', data)
+            dispatch(setAllStatus(data))
+        })
+        return () => unsubscribe()
+    }, [])
+
 
 
     if (initializing) return null;
