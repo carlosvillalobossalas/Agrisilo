@@ -26,6 +26,7 @@
     "react": "19.1.1",
     "react-native": "0.82.1",
     "react-native-big-calendar": "^4.19.0",
+    "react-native-date-picker": "^5.0.13",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-gesture-handler": "^2.29.1",
     "react-native-paper": "^5.14.5",
