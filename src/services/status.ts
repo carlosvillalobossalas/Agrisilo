@@ -1,4 +1,4 @@
-import firestore, { setDoc } from '@react-native-firebase/firestore'
+import firestore from '@react-native-firebase/firestore'
 import { Status } from '../interfaces/status';
 
 const statusCollection = firestore().collection('Status')
