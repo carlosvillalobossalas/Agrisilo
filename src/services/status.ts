@@ -1,4 +1,4 @@
-import firestore from '@react-native-firebase/firestore'
+import firestore, { setDoc } from '@react-native-firebase/firestore'
 import { Status } from '../interfaces/status';
 
 const statusCollection = firestore().collection('Status')
@@ -27,6 +27,10 @@ export const saveStatus = async (status: Status) => {
         if (status.id === '') {
             const { id, ...rest } = status;
             await statusCollection.add(rest)
+        } else {
+            await statusCollection.doc(status.id).set({
+                ...status
+            })
         }
     } catch (error) {
         console.error(error)

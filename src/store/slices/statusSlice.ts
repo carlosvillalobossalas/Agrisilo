@@ -3,12 +3,14 @@ import { Status } from "../../interfaces/status";
 
 interface StatusState {
     statuses: Status[]
+    status: Status | null
     loading: boolean
     error: string | null
 }
 
 const initialState: StatusState = {
     statuses: [],
+    status: null,
     loading: false,
     error: null
 }
@@ -22,10 +24,13 @@ const statusSlice = createSlice({
         },
         setAllStatus: (state, action) => {
             state.statuses = action.payload
+        },
+        setStatus: (state, action) => {
+            state.status = action.payload
         }
     }
 })
 
 
-export const { setAllStatus, statusLoading } = statusSlice.actions
+export const { setAllStatus, statusLoading, setStatus } = statusSlice.actions
 export default statusSlice.reducer

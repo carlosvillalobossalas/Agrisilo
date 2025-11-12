@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
 import { useDispatch } from 'react-redux'
-import { statusLoading } from '../../store/slices/statusSlice'
+import { setStatus, statusLoading } from '../../store/slices/statusSlice'
 import { saveStatus } from '../../services/status'
 import { Status } from '../../interfaces/status'
 import { useAppSelector } from '../../store'
@@ -28,8 +28,17 @@ const StatusScreen = () => {
         if (!statusState.loading) {
             navigation.goBack()
         }
-
     }
+
+    useEffect(() => {
+        if (statusState.status) {
+            setStatusForm(statusState.status)
+        }
+        return () => {
+            dispatch(setStatus(null))
+        }
+    }, [statusState.status])
+
 
     return (
         <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
