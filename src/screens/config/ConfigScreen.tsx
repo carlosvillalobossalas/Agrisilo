@@ -5,9 +5,11 @@ import CustomButtonTwoIcons from '../../components/CustomButtonTwoIcons'
 import { useDispatch } from 'react-redux'
 import { logoutFB } from '../../services/auth'
 import { logout } from '../../store/slices/authSlice'
+import { useNavigation } from '@react-navigation/native'
 
 const ConfigScreen = () => {
   const dispatch = useDispatch()
+  const navigation = useNavigation()
 
   const handleLogout = async () => {
     const res = await logoutFB()
@@ -20,7 +22,7 @@ const ConfigScreen = () => {
       <View style={{ height: 20 }} />
       <CustomButtonTwoIcons label={'Lista de usuarios'} iconLeft={"account-multiple-outline"} iconRight={"chevron-right"} />
       <CustomButtonTwoIcons label={'Lista de servicios'} iconLeft={"account-wrench-outline"} iconRight={"chevron-right"} />
-      <CustomButtonTwoIcons label={'Lista de estados'} iconLeft={"list-status"} iconRight={"chevron-right"} />
+      <CustomButtonTwoIcons label={'Lista de estados'} iconLeft={"list-status"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('StatusesScreen') }} />
       <Button
         style={{
           marginTop: 20,
