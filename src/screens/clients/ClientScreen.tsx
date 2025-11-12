@@ -64,6 +64,7 @@ const ClientScreen = () => {
         <TextInput
           value={clientForm.email}
           inputMode='email'
+          autoCapitalize='none'
           onChangeText={(text) => setClientForm({ ...clientForm, email: text })}
           placeholder='ejemplo@gmail.com'
           mode='outlined'
