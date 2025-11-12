@@ -2,13 +2,14 @@ import { View } from 'react-native'
 import React from 'react'
 import { Button, Icon, Text } from 'react-native-paper'
 
-interface CustomButtonTwoIcons {
+interface CustomButtonTwoIconsProps {
     label: string
     iconLeft: string
     iconRight: string
+    onPress?: () => void
 }
 
-const CustomButtonTwoIcons = ({ label, iconLeft, iconRight }: CustomButtonTwoIcons) => {
+const CustomButtonTwoIcons = ({ label, iconLeft, iconRight, onPress }: CustomButtonTwoIconsProps) => {
     return (
         <Button
             mode="elevated"
@@ -25,7 +26,7 @@ const CustomButtonTwoIcons = ({ label, iconLeft, iconRight }: CustomButtonTwoIco
                 alignItems: 'center',
                 justifyContent: 'flex-start'
             }}
-            onPress={() => { }}
+            onPress={onPress}
         >
             <View style={{
                 flexDirection: 'row',
