@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import authReducer from './slices/authSlice';
 import statusReducer from './slices/statusSlice'
+import serviceReducer from './slices/serviceSlice'
 
 export const store = configureStore({
     reducer: {
         authState: authReducer,
-        statusState: statusReducer
+        statusState: statusReducer,
+        serviceState: serviceReducer
     }
 });
 

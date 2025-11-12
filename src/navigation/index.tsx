@@ -18,6 +18,9 @@ import StatusScreen from '../screens/status/StatusScreen';
 import { getAllStatus } from '../services/status';
 import { setAllStatus } from '../store/slices/statusSlice';
 import StatusesScreen from '../screens/status/StatusesScreen';
+import ServicesScreen from '../screens/services/ServicesScreen';
+import { getAllServices } from '../services/services';
+import { setAllServices } from '../store/slices/serviceSlice';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -142,6 +145,16 @@ const RootStack = createNativeStackNavigator({
                 headerTitle: 'Agregar Servicio',
             },
         },
+        ServicesScreen: {
+            screen: ServicesScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Servicios',
+            },
+        },
         StatusScreen: {
             screen: StatusScreen,
             headerStyle: {
@@ -208,6 +221,14 @@ export default function Navigation() {
         const unsubscribe = getAllStatus((data) => {
             console.log('status', data)
             dispatch(setAllStatus(data))
+        })
+        return () => unsubscribe()
+    }, [])
+
+    useEffect(() => {
+        const unsubscribe = getAllServices((data) => {
+            console.log('services', data)
+            dispatch(setAllServices(data))
         })
         return () => unsubscribe()
     }, [])
