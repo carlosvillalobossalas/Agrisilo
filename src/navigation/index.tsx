@@ -21,6 +21,8 @@ import StatusesScreen from '../screens/status/StatusesScreen';
 import ServicesScreen from '../screens/services/ServicesScreen';
 import { getAllServices } from '../services/services';
 import { setAllServices } from '../store/slices/serviceSlice';
+import { getAllClients } from '../services/clients';
+import { setAllClients } from '../store/slices/clientSlice';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -233,6 +235,13 @@ export default function Navigation() {
         return () => unsubscribe()
     }, [])
 
+    useEffect(() => {
+        const unsubscribe = getAllClients((data) => {
+            console.log('clients', data)
+            dispatch(setAllClients(data))
+        })
+        return () => unsubscribe()
+    }, [])
 
 
     if (initializing) return null;

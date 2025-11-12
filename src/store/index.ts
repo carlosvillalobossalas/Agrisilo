@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useSelector } from "react-redux";
 import authReducer from './slices/authSlice';
 import statusReducer from './slices/statusSlice'
 import serviceReducer from './slices/serviceSlice'
+import clientReducer from './slices/clientSlice'
 
 export const store = configureStore({
     reducer: {
         authState: authReducer,
         statusState: statusReducer,
-        serviceState: serviceReducer
+        serviceState: serviceReducer,
+        clientState: clientReducer,
     }
 });
 
