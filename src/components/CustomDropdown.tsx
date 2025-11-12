@@ -36,7 +36,6 @@ const CustomDropdown = ({ open, value, items, placeholder, setOpen, setValue, }:
             setValue={setValue}
             dropDownDirection='BOTTOM'
             items={items}
-            
             placeholder={placeholder}
             style={dropdownStyle}
             dropDownContainerStyle={dropdownContainerStyle}
