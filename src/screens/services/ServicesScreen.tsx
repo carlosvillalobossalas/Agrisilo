@@ -1,39 +1,58 @@
 import { View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import ColorPicker, { Preview } from 'reanimated-color-picker'
 import { setService } from '../../store/slices/serviceSlice'
+import { TextInput } from 'react-native-paper'
 
 const ServicesScreen = () => {
     const serviceState = useAppSelector(state => state.serviceState)
     const dispatch = useDispatch()
 
     const navigation = useNavigation()
+
+    const [filterValue, setFilterValue] = useState('')
+
     return (
         <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+            <TextInput
+                mode='flat'
+                left={<TextInput.Icon icon={'magnify'} />}
+                label={'Buscar por nombre'}
+                value={filterValue}
+                onChangeText={(text) => setFilterValue(text)}
+                style={{ marginBottom: 10 }}
+            />
             {
-                serviceState.services.map((service) => (
-                    <CustomButtonWithIconRight
-                        key={service.id}
-                        mode='elevated'
-                        label={service.name}
-                        onPress={() => {
-                            dispatch(setService(service))
-                            navigation.navigate('ServiceScreen')
-                        }}
-                        icon='chevron-right'
-                        labelStyle={{ fontWeight: 'bold' }}
-                    >
-                        <ColorPicker
-                            value={service.color}
+                serviceState.services
+                    .filter(service => {
+                        if (filterValue === '') {
+                            return true
+                        }
+                        return service.name.toLowerCase().includes(filterValue.toLowerCase())
+                    })
+                    .map((service) => (
+                        <CustomButtonWithIconRight
+                            key={service.id}
+                            mode='elevated'
+                            label={service.name}
+                            onPress={() => {
+                                dispatch(setService(service))
+                                navigation.navigate('ServiceScreen')
+                            }}
+                            icon='chevron-right'
+                            labelStyle={{ fontWeight: 'bold' }}
                         >
-                            <Preview style={{ width: 100, height: 15 }} hideInitialColor hideText />
-                        </ColorPicker>
-                    </CustomButtonWithIconRight>
-                ))
+                            <ColorPicker
+                                value={service.color}
+                            >
+                                <Preview style={{ width: 100, height: 15 }} hideInitialColor hideText />
+                            </ColorPicker>
+                        </CustomButtonWithIconRight>
+                    ))
             }
         </View >
     )
