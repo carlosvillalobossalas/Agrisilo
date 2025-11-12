@@ -4,6 +4,7 @@ import authReducer from './slices/authSlice';
 import statusReducer from './slices/statusSlice'
 import serviceReducer from './slices/serviceSlice'
 import clientReducer from './slices/clientSlice'
+import eventReducer from './slices/eventSlice'
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         statusState: statusReducer,
         serviceState: serviceReducer,
         clientState: clientReducer,
+        eventState: eventReducer
     }
 });
 

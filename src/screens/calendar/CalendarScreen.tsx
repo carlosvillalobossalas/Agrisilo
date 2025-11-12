@@ -1,59 +1,26 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { Calendar, ICalendarEventBase, Mode, modeToNum } from 'react-native-big-calendar'
-import { FAB, IconButton, Portal, SegmentedButtons, Text } from 'react-native-paper'
+import { IconButton, SegmentedButtons, Text } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { View } from 'react-native'
 import dayjs from 'dayjs'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
-
-const events: Array<ICalendarEventBase & { color?: string }> = [
-  {
-    title: 'Siembra de arroz',
-    start: new Date(2025, 10, 2, 9, 0),
-    end: new Date(2025, 10, 2, 11, 0),
-    color: '#a67c52',
-  },
-  {
-    title: 'Fumigación finca A',
-    start: new Date(2025, 10, 4, 13, 0),
-    end: new Date(2025, 10, 4, 15, 0),
-    color: '#c62828',
-  },
-  {
-    title: 'Riego zona norte',
-    start: new Date(2025, 10, 4, 9, 0),
-    end: new Date(2025, 10, 4, 12, 0),
-    color: '#2e7d32',
-  },
-  {
-    title: 'Riego zona norte',
-    start: new Date(2025, 10, 4, 9, 0),
-    end: new Date(2025, 10, 4, 12, 0),
-    color: '#2e7d32',
-  },
-  {
-    title: 'Riego zona norte',
-    start: new Date(2025, 10, 4, 9, 0),
-    end: new Date(2025, 10, 4, 12, 0),
-    color: '#2e7d32',
-  },
-  {
-    title: 'Riego zona norte',
-    start: new Date(2025, 10, 4, 9, 0),
-    end: new Date(2025, 10, 4, 12, 0),
-    color: '#2e7d32',
-  },
-];
+import { useAppSelector } from '../../store'
 
 const today = new Date()
 
 
 const CalendarScreen = () => {
+
+  const eventState = useAppSelector(state => state.eventState)
+  const serviceState = useAppSelector(state => state.serviceState)
+
   const [date, setDate] = useState(today)
   const [mode, setMode] = useState<Mode>('month')
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [events, setEvents] = useState<Array<ICalendarEventBase & { color?: string }>>([])
 
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -91,6 +58,21 @@ const CalendarScreen = () => {
     if (mode !== 'schedule')
       setDate(dayjs(date).add(modeToNum(mode, date), 'day').toDate())
   }
+
+  useEffect(() => {
+    setEvents(
+      eventState.events.map(event => {
+        return {
+          title: event.name,
+          start: new Date(event.startDate),
+          end: new Date(event.endDate),
+          color: serviceState.services.find(service => service.id === event.services[0])?.color,
+          
+        }
+      })
+    )
+  }, [eventState, serviceState])
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>

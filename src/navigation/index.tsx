@@ -23,6 +23,9 @@ import { getAllServices } from '../services/services';
 import { setAllServices } from '../store/slices/serviceSlice';
 import { getAllClients } from '../services/clients';
 import { setAllClients } from '../store/slices/clientSlice';
+import EventScreen from '../screens/events/EventScreen';
+import { getAllEvents } from '../services/events';
+import { setAllEvents } from '../store/slices/eventSlice';
 
 // import SignUp from '../screens/auth/SignUp';
 
@@ -127,6 +130,16 @@ const RootStack = createNativeStackNavigator({
     },
     screens: {
         Calendar: AppTabs,
+        EventScreen: {
+            screen: EventScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Agregar Evento',
+            },
+        },
         ClientScreen: {
             screen: ClientScreen,
             headerStyle: {
@@ -239,6 +252,14 @@ export default function Navigation() {
         const unsubscribe = getAllClients((data) => {
             console.log('clients', data)
             dispatch(setAllClients(data))
+        })
+        return () => unsubscribe()
+    }, [])
+
+    useEffect(() => {
+        const unsubscribe = getAllEvents((data) => {
+            console.log('events', data)
+            dispatch(setAllEvents(data))
         })
         return () => unsubscribe()
     }, [])

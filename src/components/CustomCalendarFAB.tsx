@@ -21,7 +21,7 @@ const CustomCalendarFAB = () => {
                 open={openFAB}
                 actions={[
                     {
-                        label: 'Agregar tarea', icon: 'calendar-plus', onPress: () => { }
+                        label: 'Agregar tarea', icon: 'calendar-plus', onPress: () => { navigation.navigate('EventScreen') }
                     },
                     {
                         label: 'Agregar cliente', icon: 'account-group-outline', onPress: () => { navigation.navigate('ClientScreen') }
