@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback,  useMemo, useRef, useState } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { Calendar, ICalendarEventBase, Mode, modeToNum } from 'react-native-big-calendar'
 import { IconButton, SegmentedButtons, Text } from 'react-native-paper'
@@ -10,18 +10,18 @@ import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 import { useAppSelector } from '../../store'
 
 const today = new Date()
-
+type CalendarEvent = ICalendarEventBase & { color?: string }
 
 const CalendarScreen = () => {
 
   const eventState = useAppSelector(state => state.eventState)
   const serviceState = useAppSelector(state => state.serviceState)
+  const statusState = useAppSelector(state => state.statusState)
+  const clientState = useAppSelector(state => state.clientState)
 
   const [date, setDate] = useState(today)
   const [mode, setMode] = useState<Mode>('month')
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [events, setEvents] = useState<Array<ICalendarEventBase & { color?: string }>>([])
-
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
 
@@ -59,20 +59,50 @@ const CalendarScreen = () => {
       setDate(dayjs(date).add(modeToNum(mode, date), 'day').toDate())
   }
 
-  useEffect(() => {
-    setEvents(
-      eventState.events.map(event => {
-        return {
-          title: event.name,
-          start: new Date(event.startDate),
-          end: new Date(event.endDate),
-          color: serviceState.services.find(service => service.id === event.services[0])?.color,
-          
-        }
-      })
-    )
-  }, [eventState, serviceState])
+  const events = useMemo<CalendarEvent[]>(
+    () => {
+      if (eventState.events.length === 0) return []
 
+      let eventsTemp = [...eventState.events]
+
+      if (eventState.config.statusFilter !== 'none') {
+        eventsTemp = eventsTemp.filter(
+          (event) => event.status === eventState.config.statusFilter
+        )
+      }
+
+      if (eventState.config.serviceFilter !== 'none') {
+        eventsTemp = eventsTemp.filter(
+          (event) => event.services.includes(eventState.config.serviceFilter)
+        )
+      }
+
+      if (eventState.config.clientFilter !== 'none') {
+        eventsTemp = eventsTemp.filter(
+          (event) => event.client === eventState.config.clientFilter
+        )
+      }
+
+      return eventsTemp.map((event) => ({
+        title: event.name,
+        start: new Date(event.startDate),
+        end: new Date(event.endDate),
+        color:
+          eventState.config.colorBy === 'service'
+            ? serviceState.services.find(
+              (service) => service.id === event.services[0]
+            )?.color
+            : eventState.config.colorBy === 'status'
+              ? statusState.statuses.find(
+                (status) => status.id === event.status
+              )?.color
+              : clientState.clients.find(
+                (client) => client.id === event.client
+              )?.color,
+      }))
+    },
+    [eventState, serviceState, statusState, clientState]
+  )
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>

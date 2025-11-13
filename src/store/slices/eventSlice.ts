@@ -6,13 +6,25 @@ interface EventState {
     event: IEvent | null
     loading: boolean
     error: string | null
+    config: {
+        statusFilter: string
+        clientFilter: string
+        serviceFilter: string
+        colorBy: string
+    }
 }
 
 const initialState: EventState = {
     events: [],
     event: null,
     loading: false,
-    error: null
+    error: null,
+    config: {
+        statusFilter: 'none',
+        clientFilter: 'none',
+        serviceFilter: 'none',
+        colorBy: 'service'
+    }
 }
 
 const eventSlice = createSlice({
@@ -27,10 +39,22 @@ const eventSlice = createSlice({
         },
         setEvent: (state, action) => {
             state.event = action.payload
+        },
+        setColorBy: (state, action) => {
+            state.config.colorBy = action.payload
+        },
+        setStatusFilter: (state, action) => {
+            state.config.statusFilter = action.payload
+        },
+        setClientFilter: (state, action) => {
+            state.config.clientFilter = action.payload
+        },
+        setServiceFilter: (state, action) => {
+            state.config.serviceFilter = action.payload
         }
     }
 })
 
 
-export const { setAllEvents, eventLoading, setEvent } = eventSlice.actions
+export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter} = eventSlice.actions
 export default eventSlice.reducer

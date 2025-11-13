@@ -4,6 +4,9 @@ import { Portal, SegmentedButtons } from 'react-native-paper'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomDropdown from './CustomDropdown'
+import { useAppSelector } from '../store'
+import { useDispatch } from 'react-redux'
+import { setClientFilter, setColorBy, setServiceFilter, setStatusFilter } from '../store/slices/eventSlice'
 
 interface CustomBottomFilterSheet {
     ref: React.RefObject<BottomSheetModal | null>,
@@ -12,15 +15,27 @@ interface CustomBottomFilterSheet {
 
 
 const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilterSheet) => {
-    const [status, setStatus] = useState('incompleted')
+
+    const eventState = useAppSelector(state => state.eventState)
+    const clientState = useAppSelector(state => state.clientState)
+    const serviceState = useAppSelector(state => state.serviceState)
+    const statusState = useAppSelector(state => state.statusState)
+
+
+    const dispatch = useDispatch()
+
     const [openStatusDropdown, setOpenStatusDropdown] = useState(false)
-    const [service, setService] = useState('siembra')
     const [openServiceDropdown, setOpenServiceDropdown] = useState(false)
-    const [client, setClient] = useState('a')
     const [openClientDropdown, setOpenClientDropdown] = useState(false)
-    const [colorFilter, setColorFilter] = useState('service')
 
     const insets = useSafeAreaInsets();
+
+    const handleColorByChange = (value: string) => {
+        console.log(value)
+        dispatch(setColorBy(value))
+        // TODO: close modal?
+        // handleSheetChanges(1)
+    }
 
     return (
         <Portal>
@@ -50,28 +65,52 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                     <View style={{ marginTop: 20, width: '100%' }}>
                         <CustomDropdown
                             placeholder="Estado"
-                            value={status}
-                            setValue={setStatus}
+                            value={eventState.config.statusFilter}
+                            setValue={(next) => {
+
+                                let newValue: string
+
+                                if (typeof next === 'function') {
+                                    newValue = next(eventState.config.statusFilter)
+                                } else {
+                                    newValue = next
+                                }
+
+                                dispatch(setStatusFilter(newValue))
+                            }}
                             setOpen={setOpenStatusDropdown}
                             open={openStatusDropdown}
                             items={[
-                                { label: 'En proceso', value: 'incompleted' },
-                                { label: 'Completado', value: 'completed' },
-                                { label: 'Cancelado', value: 'cancelled' },
+                                { label: 'Niguno', value: 'none' },
+                                ...statusState.statuses.map(status => {
+                                    return { label: status.name, value: status.id }
+                                }),
                             ]}
                         />
                         <View style={{ height: 20 }} />
                         <View style={{ zIndex: 2 }}>
                             <CustomDropdown
                                 placeholder="Servicio"
-                                value={service}
-                                setValue={setService}
+                                value={eventState.config.serviceFilter}
+                                setValue={(next) => {
+
+                                    let newValue: string
+
+                                    if (typeof next === 'function') {
+                                        newValue = next(eventState.config.serviceFilter)
+                                    } else {
+                                        newValue = next
+                                    }
+
+                                    dispatch(setServiceFilter(newValue))
+                                }}
                                 setOpen={setOpenServiceDropdown}
                                 open={openServiceDropdown}
                                 items={[
-                                    { label: 'Siembra', value: 'siembra' },
-                                    { label: 'Fumigación', value: 'fumigacion' },
-                                    { label: 'Riego', value: 'riego' },
+                                    { label: 'Ninguno', value: 'none' },
+                                    ...serviceState.services.map(service => {
+                                        return { label: service.name, value: service.id }
+                                    }),
                                 ]}
                             />
                         </View>
@@ -79,22 +118,36 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                         <View style={{ zIndex: 1 }}>
                             <CustomDropdown
                                 placeholder="Cliente"
-                                value={client}
-                                setValue={setClient}
+                                value={eventState.config.clientFilter}
+                                setValue={(next) => {
+
+                                    let newValue: string
+
+                                    if (typeof next === 'function') {
+                                        newValue = next(eventState.config.clientFilter)
+                                    } else {
+                                        newValue = next
+                                    }
+
+                                    dispatch(setClientFilter(newValue))
+                                }}
                                 setOpen={setOpenClientDropdown}
                                 open={openClientDropdown}
                                 items={[
-                                    { label: 'Cliente A', value: 'a' },
-                                    { label: 'Cliente B', value: 'b' },
-                                    { label: 'Cliente C', value: 'c' },
+                                    { label: 'Ninguno', value: 'none' },
+                                    ...clientState.clients.map(client => {
+                                        return { label: client.name, value: client.id }
+                                    }),
                                 ]}
                             />
                         </View>
                         <View style={{ height: 20 }} />
                         <Text style={{ fontSize: 16, fontWeight: 'bold', zIndex: 0, marginVertical: 10 }}>Colores por:</Text>
                         <SegmentedButtons
-                            value={colorFilter}
-                            onValueChange={setColorFilter}
+                            value={eventState.config.colorBy}
+                            onValueChange={(value) => {
+                                handleColorByChange(value)
+                            }}
                             buttons={[
                                 { value: 'service', label: 'Servicio' },
                                 { value: 'status', label: 'Estado' },
