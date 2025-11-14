@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { View } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { Alert, TouchableOpacity, View } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
 import { Client } from '../../interfaces/client'
@@ -7,7 +7,8 @@ import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { clientLoading, setClient } from '../../store/slices/clientSlice'
-import { saveClient } from '../../services/clients'
+import { deleteClient, saveClient } from '../../services/clients'
+import Icon from '@react-native-vector-icons/material-design-icons';
 
 const ClientScreen = () => {
   const clientState = useAppSelector(state => state.clientState)
@@ -36,6 +37,27 @@ const ClientScreen = () => {
   }
 
 
+  const handleDelete = async () => {
+    dispatch(clientLoading(true))
+    await deleteClient(clientForm.id)
+    dispatch(setClient(null))
+    dispatch(clientLoading(false))
+    if (!clientState.loading) {
+      navigation.goBack()
+    }
+  }
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Eliminar cliente",
+      "¿Estás seguro de que deseas eliminar este cliente?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Eliminar", style: "destructive", onPress: handleDelete }
+      ]
+    );
+  };
+
   useEffect(() => {
     if (clientState.client) {
       setClientForm(clientState.client)
@@ -44,6 +66,26 @@ const ClientScreen = () => {
       dispatch(setClient(null))
     }
   }, [clientState.client])
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: clientForm.id ? 'Modificar cliente' : 'Nuevo cliente',
+      headerRight: clientForm.id
+        ? () => (
+          <TouchableOpacity
+            onPress={confirmDelete}
+            style={{
+              backgroundColor: 'rgba(229, 211, 211, 0.25)',
+              padding: 5,
+              borderRadius: 20,
+            }}
+          >
+            <Icon name="delete-outline" size={26} color="#000" />
+          </TouchableOpacity>
+        )
+        : undefined
+    })
+  }, [navigation, clientForm.id])
 
   return (
     <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>

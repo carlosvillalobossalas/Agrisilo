@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from 'react-native'
+import { Alert, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, Text, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
@@ -42,6 +42,17 @@ const ServiceScreen = () => {
         }
     }
 
+    const confirmDelete = () => {
+        Alert.alert(
+            "Eliminar servicio",
+            "¿Estás seguro de que deseas eliminar este servicio?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: handleDelete }
+            ]
+        );
+    };
+
     useEffect(() => {
         if (serviceState.service) {
             setServiceForm(serviceState.service)
@@ -57,7 +68,7 @@ const ServiceScreen = () => {
             headerRight: serviceForm.id
                 ? () => (
                     <TouchableOpacity
-                        onPress={handleDelete}
+                        onPress={confirmDelete}
                         style={{
                             backgroundColor: 'rgba(229, 211, 211, 0.25)',
                             padding: 5,

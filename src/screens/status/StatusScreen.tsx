@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
@@ -31,6 +31,8 @@ const StatusScreen = () => {
         }
     }
 
+
+
     const handleDelete = async () => {
         dispatch(statusLoading(true))
         await deleteStatus(statusForm.id)
@@ -40,6 +42,18 @@ const StatusScreen = () => {
             navigation.goBack()
         }
     }
+
+    const confirmDelete = () => {
+        Alert.alert(
+            "Eliminar estado",
+            "¿Estás seguro de que deseas eliminar este estado?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: handleDelete }
+            ]
+        );
+    };
+
 
     useEffect(() => {
         if (statusState.status) {
@@ -56,7 +70,7 @@ const StatusScreen = () => {
             headerRight: statusForm.id
                 ? () => (
                     <TouchableOpacity
-                        onPress={handleDelete}
+                        onPress={confirmDelete}
                         style={{
                             backgroundColor: 'rgba(229, 211, 211, 0.25)',
                             padding: 5,

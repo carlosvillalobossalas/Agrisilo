@@ -36,3 +36,11 @@ export const saveClient = async (client: Client) => {
         console.error(error)
     }
 }
+
+export const deleteClient = async (id: string) => {
+    try {
+        await clientCollection.doc(id).delete()
+    } catch (error) {
+        console.error(error)
+    }
+}
