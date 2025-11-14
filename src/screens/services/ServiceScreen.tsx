@@ -1,13 +1,14 @@
-import { View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, Text, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
 import { Service } from '../../interfaces/services'
 import { useDispatch } from 'react-redux'
 import { serviceLoading, setService } from '../../store/slices/serviceSlice'
-import { saveService } from '../../services/services'
+import { deleteService, saveService } from '../../services/services'
 import { useAppSelector } from '../../store'
 import { useNavigation } from '@react-navigation/native'
+import Icon from '@react-native-vector-icons/material-design-icons';
 
 const ServiceScreen = () => {
     const serviceState = useAppSelector(state => state.serviceState)
@@ -31,6 +32,15 @@ const ServiceScreen = () => {
         }
     }
 
+    const handleDelete = async () => {
+        dispatch(serviceLoading(true))
+        await deleteService(serviceForm.id)
+        dispatch(setService(null))
+        dispatch(serviceLoading(false))
+        if (!serviceState.loading) {
+            navigation.goBack()
+        }
+    }
 
     useEffect(() => {
         if (serviceState.service) {
@@ -40,6 +50,27 @@ const ServiceScreen = () => {
             dispatch(setService(null))
         }
     }, [serviceState.service])
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: serviceForm.id ? 'Modificar servicio' : 'Nuevo servicio',
+            headerRight: serviceForm.id
+                ? () => (
+                    <TouchableOpacity
+                        onPress={handleDelete}
+                        style={{
+                            backgroundColor: 'rgba(229, 211, 211, 0.25)',
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="delete-outline" size={26} color="#000" />
+                    </TouchableOpacity>
+                )
+                : undefined
+        })
+    }, [navigation, serviceForm.id])
+
 
     return (
         <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>

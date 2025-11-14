@@ -36,3 +36,11 @@ export const saveService = async (service: Service) => {
         console.error(error)
     }
 }
+
+export const deleteService = async (id: string) => {
+    try {
+        await serviceCollection.doc(id).delete()
+    } catch (error) {
+        console.error(error)
+    }
+}

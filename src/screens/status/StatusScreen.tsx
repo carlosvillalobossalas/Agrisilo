@@ -1,13 +1,14 @@
-import { View, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
 import { useDispatch } from 'react-redux'
 import { setStatus, statusLoading } from '../../store/slices/statusSlice'
-import { saveStatus } from '../../services/status'
+import { deleteStatus, saveStatus } from '../../services/status'
 import { Status } from '../../interfaces/status'
 import { useAppSelector } from '../../store'
 import { useNavigation } from '@react-navigation/native'
+import Icon from '@react-native-vector-icons/material-design-icons';
 
 const StatusScreen = () => {
     const statusState = useAppSelector(state => state.statusState)
@@ -30,6 +31,16 @@ const StatusScreen = () => {
         }
     }
 
+    const handleDelete = async () => {
+        dispatch(statusLoading(true))
+        await deleteStatus(statusForm.id)
+        dispatch(setStatus(null))
+        dispatch(statusLoading(false))
+        if (!statusState.loading) {
+            navigation.goBack()
+        }
+    }
+
     useEffect(() => {
         if (statusState.status) {
             setStatusForm(statusState.status)
@@ -38,6 +49,26 @@ const StatusScreen = () => {
             dispatch(setStatus(null))
         }
     }, [statusState.status])
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: statusForm.id ? 'Modificar estado' : 'Nuevo estado',
+            headerRight: statusForm.id
+                ? () => (
+                    <TouchableOpacity
+                        onPress={handleDelete}
+                        style={{
+                            backgroundColor: 'rgba(229, 211, 211, 0.25)',
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="delete-outline" size={26} color="#000" />
+                    </TouchableOpacity>
+                )
+                : undefined
+        })
+    }, [navigation, statusForm.id])
 
 
     return (

@@ -36,3 +36,11 @@ export const saveStatus = async (status: Status) => {
         console.error(error)
     }
 }
+
+export const deleteStatus = async (id: string) => {
+    try {
+        await statusCollection.doc(id).delete()
+    } catch (error) {
+        console.error(error)
+    }
+}
