@@ -8,7 +8,7 @@ import { FirebaseAuthTypes, getAuth, onAuthStateChanged } from '@react-native-fi
 import { useDispatch } from 'react-redux';
 import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlice';
 import CalendarScreen from '../screens/calendar/CalendarScreen';
-import { IconButton, useTheme } from 'react-native-paper';
+import { Button, IconButton, Text, useTheme } from 'react-native-paper';
 import ToDoScreen from '../screens/todos/ToDoScreen';
 import ClientScreen from '../screens/clients/ClientScreen';
 import ConfigScreen from '../screens/config/ConfigScreen';
@@ -26,8 +26,9 @@ import { setAllClients } from '../store/slices/clientSlice';
 import EventScreen from '../screens/events/EventScreen';
 import { getAllEvents } from '../services/events';
 import { setAllEvents } from '../store/slices/eventSlice';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { TouchableOpacity, View } from 'react-native';
 
-// import SignUp from '../screens/auth/SignUp';
 
 
 const AuthStack = createNativeStackNavigator({
@@ -92,7 +93,7 @@ const AppTabs = createBottomTabNavigator({
         },
         Clientes: {
             screen: ClientsScreen,
-            options: {
+            options: ({ navigation }) => ({
                 tabBarIcon: ({ focused }) => {
                     const { colors } = useTheme()
                     return (
@@ -101,8 +102,9 @@ const AppTabs = createBottomTabNavigator({
                             iconColor={focused ? colors.primary : colors.outline}
                         />
                     )
-                }
-            }
+                },
+                headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ClientScreen')} />
+            })
         },
         Config: {
             screen: ConfigScreen,
@@ -126,7 +128,7 @@ const RootStack = createNativeStackNavigator({
     initialRouteName: 'Calendar',
     screenOptions: {
         headerShown: false,
-        headerBackButtonDisplayMode: 'minimal'
+        headerBackButtonDisplayMode: 'minimal',
     },
     screens: {
         Calendar: AppTabs,
@@ -163,12 +165,31 @@ const RootStack = createNativeStackNavigator({
         ServicesScreen: {
             screen: ServicesScreen,
             headerStyle: {
-                height: 110
+                // height: 110,
             },
-            options: {
+            options: ({ navigation }) => ({
+                // headerTransparent: true,
                 headerShown: true,
+                headerShadowVisible: false,
                 headerTitle: 'Servicios',
-            },
+                headerStyle: {
+                },
+                headerRight: () => (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('ServiceScreen')}
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.25)',
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="plus" size={28} color="#000" />
+                    </TouchableOpacity>
+                ),
+
+
+
+            })
         },
         StatusScreen: {
             screen: StatusScreen,
@@ -185,10 +206,25 @@ const RootStack = createNativeStackNavigator({
             headerStyle: {
                 height: 110
             },
-            options: {
-                headerShown: true,
-                headerTitle: 'Estados',
-            },
+            options: ({ navigation }) => (
+                {
+                    headerShown: true,
+                    headerTitle: 'Estados',
+                    headerRight: () => (
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('StatusScreen')}
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.25)',
+                                padding: 5,
+                                borderRadius: 20,
+                            }}
+                        >
+                            <Icon name="plus" size={28} color="#000" />
+                        </TouchableOpacity>
+                    ),
+
+                }
+            )
         },
     }
 })
