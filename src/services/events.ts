@@ -50,3 +50,11 @@ export const saveEvent = async (event: IEvent) => {
         console.error(error)
     }
 }
+
+export const deleteEvent = async (id: string) => {
+    try {
+        await eventCollection.doc(id).delete()
+    } catch (error) {
+        console.error(error)
+    }
+}

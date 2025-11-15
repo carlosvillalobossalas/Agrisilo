@@ -1,5 +1,5 @@
-import { View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { Alert, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { IEvent } from '../../interfaces/events'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
@@ -8,8 +8,9 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import DatePicker from 'react-native-date-picker'
 import dayjs from 'dayjs'
 import { eventLoading, setEvent } from '../../store/slices/eventSlice'
-import { saveEvent } from '../../services/events'
+import { deleteEvent, saveEvent } from '../../services/events'
 import { useNavigation } from '@react-navigation/native'
+import Icon from '@react-native-vector-icons/material-design-icons';
 
 const EventScreen = () => {
     const eventState = useAppSelector(state => state.eventState)
@@ -52,6 +53,29 @@ const EventScreen = () => {
         }
     }
 
+    const handleDelete = async () => {
+        dispatch(eventLoading(true))
+        await deleteEvent(eventForm.id)
+        dispatch(setEvent(null))
+        dispatch(eventLoading(false))
+        if (!statusState.loading) {
+            navigation.goBack()
+        }
+    }
+
+    const confirmDelete = () => {
+        Alert.alert(
+            "Eliminar tarea",
+            "¿Estás seguro de que deseas eliminar esta tarea?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: handleDelete }
+            ]
+        );
+    };
+
+
+
     useEffect(() => {
         if (eventState.event) {
             setEventForm(eventState.event)
@@ -60,6 +84,27 @@ const EventScreen = () => {
             dispatch(setEvent(null))
         }
     }, [eventState.event])
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: eventForm.id ? 'Modificar tarea' : 'Nueva tarea',
+            headerRight: eventForm.id
+                ? () => (
+                    <TouchableOpacity
+                        onPress={confirmDelete}
+                        style={{
+                            backgroundColor: 'rgba(229, 211, 211, 0.25)',
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="delete-outline" size={26} color="#000" />
+                    </TouchableOpacity>
+                )
+                : undefined
+        })
+    }, [navigation, eventForm.id])
+
 
     return (
         <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 15 }}>
