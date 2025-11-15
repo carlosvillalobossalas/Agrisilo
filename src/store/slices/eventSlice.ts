@@ -51,10 +51,16 @@ const eventSlice = createSlice({
         },
         setServiceFilter: (state, action) => {
             state.config.serviceFilter = action.payload
+        },
+        setEventByCalendarEvent: (state, action) => {
+            const event = state.events.find(event => event.id === action.payload)
+            if (event) {
+                state.event = event
+            }
         }
     }
 })
 
 
-export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter} = eventSlice.actions
+export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter, setEventByCalendarEvent } = eventSlice.actions
 export default eventSlice.reducer

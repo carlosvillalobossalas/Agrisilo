@@ -1,3 +1,4 @@
+import { ICalendarEventBase } from "react-native-big-calendar"
 
 export interface IEvent {
     id: string
@@ -8,3 +9,5 @@ export interface IEvent {
     status: string
     client: string
 }
+
+export type CalendarEvent = ICalendarEventBase & { color?: string, id: string }

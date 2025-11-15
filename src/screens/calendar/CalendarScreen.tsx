@@ -1,6 +1,6 @@
-import React, { useCallback,  useMemo, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import { Calendar, ICalendarEventBase, Mode, modeToNum } from 'react-native-big-calendar'
+import { Calendar, Mode, modeToNum } from 'react-native-big-calendar'
 import { IconButton, SegmentedButtons, Text } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { View } from 'react-native'
@@ -8,9 +8,12 @@ import dayjs from 'dayjs'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 import { useAppSelector } from '../../store'
+import { useNavigation } from '@react-navigation/native'
+import { useDispatch } from 'react-redux'
+import { CalendarEvent } from '../../interfaces/events'
+import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
 
 const today = new Date()
-type CalendarEvent = ICalendarEventBase & { color?: string }
 
 const CalendarScreen = () => {
 
@@ -18,6 +21,9 @@ const CalendarScreen = () => {
   const serviceState = useAppSelector(state => state.serviceState)
   const statusState = useAppSelector(state => state.statusState)
   const clientState = useAppSelector(state => state.clientState)
+  const dispatch = useDispatch()
+
+  const navigation = useNavigation()
 
   const [date, setDate] = useState(today)
   const [mode, setMode] = useState<Mode>('month')
@@ -84,6 +90,7 @@ const CalendarScreen = () => {
       }
 
       return eventsTemp.map((event) => ({
+        id: event.id,
         title: event.name,
         start: new Date(event.startDate),
         end: new Date(event.endDate),
@@ -168,8 +175,15 @@ const CalendarScreen = () => {
           borderRadius: 6,
         })}
         onPressEvent={(pressEvent) => {
+          console.log(pressEvent)
+          console.log(mode)
           setDate(pressEvent.start)
-          setMode('day')
+          if (mode === 'month') {
+            setMode('day')
+          } else {
+            dispatch(setEventByCalendarEvent(pressEvent.id))
+            navigation.navigate('EventScreen')
+          }
         }}
         onPressCell={(pressDate) => {
           setDate(pressDate)
