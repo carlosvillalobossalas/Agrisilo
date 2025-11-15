@@ -96,9 +96,9 @@ const CalendarScreen = () => {
         end: new Date(event.endDate),
         color:
           eventState.config.colorBy === 'service'
-            ? serviceState.services.find(
+            ? (event.services.length > 0 ? serviceState.services.find(
               (service) => service.id === event.services[0]
-            )?.color
+            )?.color : 'white')
             : eventState.config.colorBy === 'status'
               ? statusState.statuses.find(
                 (status) => status.id === event.status
