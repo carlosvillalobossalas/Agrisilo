@@ -1,15 +1,16 @@
-import { Alert, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { Alert, TouchableOpacity, View } from 'react-native'
+import { Button, Text, TextInput } from 'react-native-paper'
+import { deleteEvent, saveEvent } from '../../services/events'
+import { eventLoading, setEvent } from '../../store/slices/eventSlice'
 import { IEvent } from '../../interfaces/events'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
-import { Button, Text, TextInput } from 'react-native-paper'
-import DropDownPicker from 'react-native-dropdown-picker'
+import { useNavigation } from '@react-navigation/native'
+import CustomInputWithBottomSheet from '../../components/CustomInputWithBottomSheet'
+import CustomMultipleInputWithBottomSheet from '../../components/CustomMultipleInputWithBottomSheet'
 import DatePicker from 'react-native-date-picker'
 import dayjs from 'dayjs'
-import { eventLoading, setEvent } from '../../store/slices/eventSlice'
-import { deleteEvent, saveEvent } from '../../services/events'
-import { useNavigation } from '@react-navigation/native'
 import Icon from '@react-native-vector-icons/material-design-icons';
 
 const EventScreen = () => {
@@ -29,11 +30,6 @@ const EventScreen = () => {
         name: '',
         services: [],
         status: ''
-    })
-    const [dropdownsForm, setDropdownsForm] = useState({
-        openClient: false,
-        openStatus: false,
-        openService: false
     })
 
     const [modalsForm, setModalsForm] = useState({
@@ -120,92 +116,69 @@ const EventScreen = () => {
             </View>
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
-
-                <DropDownPicker
-                    language='ES'
-                    open={dropdownsForm.openClient}
-                    setOpen={(value) => {
-                        const opened = value as unknown as boolean
-
-                        setDropdownsForm({
-                            openClient: opened,
-                            openService: false,
-                            openStatus: false
-                        })
-                    }}
+                <CustomInputWithBottomSheet
+                    placeholder='Seleccione un cliente'
                     value={eventForm.client}
                     items={clientState.clients.map(client => {
                         return { label: client.name, value: client.id }
                     })}
-                    placeholder='Seleccione un cliente'
-                    setValue={(value) => {
+                    onPress={(value) => {
                         setEventForm(prev => ({
                             ...prev,
-                            client: value(prev.client)
+                            client: value
                         }))
                     }}
-                    zIndex={3000}
-                    zIndexInverse={1000}
-                    closeAfterSelecting={true}
+                    icon='account-group-outline'
+                    title='Clientes'
+                    key={'client'}
                 />
             </View>
             <View style={{ gap: 5 }}>
 
                 <Text style={{ fontWeight: 'bold' }}>Servicios</Text>
-                <DropDownPicker
-                    language='ES'
-                    open={dropdownsForm.openService}
-                    setOpen={(value) => {
-                        const opened = value as unknown as boolean
-                        setDropdownsForm({
-                            openService: opened,
-                            openClient: false,
-                            openStatus: false,
-                        })
-                    }}
-                    multiple
+
+                <CustomMultipleInputWithBottomSheet
+                    placeholder='Seleccione servicios'
                     value={eventForm.services}
                     items={servicesState.services.map(service => {
                         return { label: service.name, value: service.id }
                     })}
-                    placeholder='Seleccione servicios'
-                    setValue={(cb) => setEventForm(prev => ({
-                        ...prev,
-                        services: cb(prev.services)
-                    }))}
-                    zIndex={2000}
-                    zIndexInverse={2000}
+                    onPress={(value) => {
+                        const selectedServices = [...eventForm.services]
+                        if (selectedServices.includes(value)) {
+                            selectedServices.splice(selectedServices.indexOf(value), 1)
+                        } else {
+                            selectedServices.push(value)
+                        }
+                        setEventForm(prev => ({
+                            ...prev,
+                            services: selectedServices
+                        }))
+                    }}
+                    icon='account-wrench-outline'
+                    title='Servicios'
+                    key={'service'}
                 />
             </View>
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Estado</Text>
-                <DropDownPicker
-                    language='ES'
-                    open={dropdownsForm.openStatus}
-                    setOpen={(value) => {
-                        const opened = value as unknown as boolean
-
-                        setDropdownsForm({
-                            openStatus: opened,
-                            openService: false,
-                            openClient: false
-                        })
-                    }}
+                <CustomInputWithBottomSheet
+                    placeholder='Seleccione un estado'
                     value={eventForm.status}
                     items={statusState.statuses.map(status => {
                         return { label: status.name, value: status.id }
                     })}
-                    placeholder='Seleccione un estado'
-                    setValue={(value) => {
+                    onPress={(value) => {
                         setEventForm(prev => ({
                             ...prev,
-                            status: value(prev.status)
+                            status: value
                         }))
                     }}
-                    zIndex={1000}
-                    zIndexInverse={3000}
-                    closeAfterSelecting={true}
+                    icon='check'
+                    title='Estados'
+                    key={'status'}
                 />
+
             </View>
             <TextInput
                 label='Fecha de inicio'
