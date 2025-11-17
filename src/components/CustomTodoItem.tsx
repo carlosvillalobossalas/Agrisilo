@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Pressable } from 'react-native'
 import { IconButton, TextInput, Text } from 'react-native-paper'
 import Animated, { LinearTransition } from 'react-native-reanimated'
@@ -14,6 +14,11 @@ interface TodoItemProps {
 const TodoItem = ({ item, onToggle, onDelete, onEdit }: TodoItemProps) => {
     const [editing, setEditing] = useState(false)
     const [textLocal, setTextLocal] = useState(item.description)
+
+    useEffect(() => {
+        setTextLocal(item.description)
+    }, [item.description])
+
     return (
         <Animated.View
             layout={LinearTransition.springify()}
@@ -27,7 +32,7 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit }: TodoItemProps) => {
                 borderRadius: 10
             }}
         >
-            {/* Botón circular tipo iOS */}
+
             <IconButton
                 icon={item.completed ? 'check-circle' : 'circle-outline'}
                 size={24}
@@ -41,9 +46,12 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit }: TodoItemProps) => {
                     mode="flat"
                     value={textLocal}
                     onChangeText={setTextLocal}
+                    multiline
+                    scrollEnabled={false}
+                    submitBehavior='blurAndSubmit'
                     onBlur={() => {
-                        setEditing(false)
                         onEdit(textLocal)
+                        setEditing(false)
                     }}
                     style={{ flex: 1, backgroundColor: 'transparent' }}
                 />
@@ -67,8 +75,10 @@ const TodoItem = ({ item, onToggle, onDelete, onEdit }: TodoItemProps) => {
                 onPress={onDelete}
                 style={{ margin: 0 }}
             />
+
         </Animated.View>
     )
 }
+
 
 export default TodoItem

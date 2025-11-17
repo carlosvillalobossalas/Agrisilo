@@ -10,14 +10,13 @@ import { ToDo } from '../../interfaces/todos'
 
 const ToDoScreen = () => {
 
-  const authState = useAppSelector(state => state.authState)
-  const todoState = useAppSelector(state => state.todoState)
   const dispatch = useDispatch()
+  const authState = useAppSelector(state => state.authState)
+  const todos = useAppSelector(state => state.todoState.todos)
 
   const [newValue, setNewValue] = useState('')
-  const [todos, setTodos] = useState<ToDo[]>([])
 
-
+  // 🔵 TOGGLE by ID
   const toggleTodo = async (id: string) => {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
@@ -28,6 +27,7 @@ const ToDoScreen = () => {
     })
   }
 
+  // 🔵 EDIT by ID
   const editTodo = async (id: string, text: string) => {
     const todo = todos.find(t => t.id === id)
     if (!todo) return
@@ -38,53 +38,62 @@ const ToDoScreen = () => {
     })
   }
 
+  // 🔵 DELETE by ID
   const handleDeleteTodo = async (id: string) => {
     await deleteToDo(id)
   }
-  const handleNewTodo = async () => {
-    if (newValue === '') return
 
-    setNewValue('')
+  // 🔵 NEW TODO
+  const handleNewTodo = async () => {
+    if (!newValue.trim()) return
+
     await saveToDo({
       id: '',
       userId: authState.user?.uid ?? '',
       description: newValue,
       completed: false
     })
+
+    setNewValue('')
   }
 
+  // 🔵 Real-time Firestore listener
   useEffect(() => {
     const unsubscribe = getAllToDos((data) => {
-      console.log('todos', data)
       dispatch(setAllToDos(data))
     })
-    return () => unsubscribe()
+    return unsubscribe
   }, [])
 
-  useEffect(() => {
-    setTodos(todoState.todos)
-  }, [todoState])
-
-
   return (
-    <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25, }}>
+    <View style={{
+      flex: 1,
+      gap: 10,
+      paddingVertical: 20,
+      paddingHorizontal: 25,
+    }}>
 
       <TextInput
-        right={< TextInput.Icon
-          icon={'plus-thick'}
-          style={{ paddingTop: 15 }}
-          onPress={handleNewTodo} />}
+        right={
+          <TextInput.Icon
+            icon={'plus-thick'}
+            style={{ paddingTop: 15 }}
+            onPress={handleNewTodo}
+          />
+        }
         label={'Tarea nueva'}
         value={newValue}
-        onChangeText={(text) => setNewValue(text)}
+        onChangeText={setNewValue}
         style={{
           backgroundColor: 'white',
           paddingVertical: 5,
           borderRadius: 10
         }}
       />
-      {
-        todos.map((item) => (
+
+      {todos
+        .sort((a, b) => Number(a.completed) - Number(b.completed))
+        .map(item => (
           <CustomTodoItem
             key={item.id}
             item={item}
