@@ -24,7 +24,12 @@ const StatusesScreen = () => {
                 label={'Buscar por nombre'}
                 value={filterValue}
                 onChangeText={(text) => setFilterValue(text)}
-                style={{ marginBottom: 10 }}
+                style={{
+                    marginBottom: 10,
+                    backgroundColor: 'white',
+                    paddingVertical: 5,
+                    borderRadius: 10
+                }}
             />
             {
                 statusState.statuses
