@@ -134,22 +134,18 @@ export const markInviteAsUsed = async (code: string) => {
 
 export const sendInviteEmail = async (email: string, code: string) => {
     const subject = encodeURIComponent("Invitación para registrarte en Agrisilo");
-    const body = encodeURIComponent(
-        `Hola,
 
-Has sido invitado a unirte a Agrisilo.
+    const rawBody =
+        "Hola,\r\n\r\n" +
+        "Has sido invitado a unirte a Agrisilo.\r\n\r\n" +
+        "Tu código de verificación es:\r\n\r\n" +
+        `📌 ${code}\r\n\r\n` +
+        "Este código expira en 1 hora.\r\n\r\n" +
+        "Ingresa a la app, selecciona \"Crear cuenta\" e introduce este código.\r\n\r\n" +
+        "Saludos,\r\n" +
+        "Equipo Agrisilo";
 
-Tu código de verificación es:
-
-📌 ${code}
-
-Este código expira en 1 hora.
-
-Ingresa a la app, selecciona "Crear cuenta" e introduce este código. \n
-
-Saludos,
-Equipo Agrisilo`
-    );
+    const body = encodeURIComponent(rawBody);
 
     const mailUrl = `mailto:${email}?subject=${subject}&body=${body}`;
 
