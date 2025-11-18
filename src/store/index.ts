@@ -16,7 +16,11 @@ export const store = configureStore({
         clientState: clientReducer,
         eventState: eventReducer,
         todoState: todoReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false, // 👈 desactiva solo este check
+        }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

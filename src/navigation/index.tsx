@@ -28,6 +28,8 @@ import { getAllEvents } from '../services/events';
 import { setAllEvents } from '../store/slices/eventSlice';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { TouchableOpacity, View } from 'react-native';
+import UsersScreen from '../screens/users/UsersScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
 
 
 
@@ -40,23 +42,20 @@ const AuthStack = createNativeStackNavigator({
                 headerShown: false
             }
         },
-        // SignUp: {
-        //     screen: SignUp,
-        //     options: {
-        //         headerShown: true,
-        //         headerTitle: '',
-        //         headerBackTitle: 'Iniciar sesión',                
-        //     }
-        // }
+        SignUp: {
+            screen: SignUpScreen,
+            options: {
+                headerShown: true,
+                headerTitle: 'Registro',
+                headerBackButtonDisplayMode: 'minimal'
+            },
+        },
     }
 })
 
 const AppTabs = createBottomTabNavigator({
     initialRouteName: 'Calendario',
     screenOptions: {
-        // headerRight: () => (
-        //     <LogoutButton />
-        // ),
         headerStyle: {
             height: 110
         }
@@ -226,6 +225,17 @@ const RootStack = createNativeStackNavigator({
                 }
             )
         },
+
+        UsersScreen: {
+            screen: UsersScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Usuarios',
+            },
+        },
     }
 })
 
@@ -269,36 +279,44 @@ export default function Navigation() {
     }, [])
 
     useEffect(() => {
-        const unsubscribe = getAllStatus((data) => {
-            console.log('status', data)
-            dispatch(setAllStatus(data))
-        })
-        return () => unsubscribe()
-    }, [])
+        if (user) {
+            const unsubscribe = getAllStatus((data) => {
+                console.log('status', data)
+                dispatch(setAllStatus(data))
+            })
+            return () => unsubscribe()
+        }
+    }, [user])
 
     useEffect(() => {
-        const unsubscribe = getAllServices((data) => {
-            console.log('services', data)
-            dispatch(setAllServices(data))
-        })
-        return () => unsubscribe()
-    }, [])
+        if (user) {
+            const unsubscribe = getAllServices((data) => {
+                console.log('services', data)
+                dispatch(setAllServices(data))
+            })
+            return () => unsubscribe()
+        }
+    }, [user])
 
     useEffect(() => {
-        const unsubscribe = getAllClients((data) => {
-            console.log('clients', data)
-            dispatch(setAllClients(data))
-        })
-        return () => unsubscribe()
-    }, [])
+        if (user) {
+            const unsubscribe = getAllClients((data) => {
+                console.log('clients', data)
+                dispatch(setAllClients(data))
+            })
+            return () => unsubscribe()
+        }
+    }, [user])
 
     useEffect(() => {
-        const unsubscribe = getAllEvents((data) => {
-            console.log('events', data)
-            dispatch(setAllEvents(data))
-        })
-        return () => unsubscribe()
-    }, [])
+        if (user) {
+            const unsubscribe = getAllEvents((data) => {
+                console.log('events', data)
+                dispatch(setAllEvents(data))
+            })
+            return () => unsubscribe()
+        }
+    }, [user])
 
 
     if (initializing) return null;

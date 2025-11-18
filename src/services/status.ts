@@ -14,7 +14,7 @@ export const getAllStatus = (callback: (status: Status[]) => void) => {
         callback(data)
     },
         (error) => {
-            console.log(error)
+            console.log('error', error)
         }
     )
 
