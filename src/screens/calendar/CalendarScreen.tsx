@@ -8,10 +8,10 @@ import dayjs from 'dayjs'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 import { useAppSelector } from '../../store'
-import { useNavigation } from '@react-navigation/native'
 import { useDispatch } from 'react-redux'
 import { CalendarEvent } from '../../interfaces/events'
 import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
+import CustomBottomEventDetails from '../../components/CustomBottomEventDetails'
 
 const today = new Date()
 
@@ -23,12 +23,13 @@ const CalendarScreen = () => {
   const clientState = useAppSelector(state => state.clientState)
   const dispatch = useDispatch()
 
-  const navigation = useNavigation()
 
   const [date, setDate] = useState(today)
   const [mode, setMode] = useState<Mode>('month')
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const eventBottomSheetRef = useRef<BottomSheetModal>(null);
+
 
 
   const handleSheetChanges = useCallback((index: number) => {
@@ -182,7 +183,7 @@ const CalendarScreen = () => {
             setMode('day')
           } else {
             dispatch(setEventByCalendarEvent(pressEvent.id))
-            navigation.navigate('EventScreen')
+            eventBottomSheetRef.current?.present()
           }
         }}
         onPressCell={(pressDate) => {
@@ -198,6 +199,9 @@ const CalendarScreen = () => {
 
       {/* Filtros */}
       <CustomBottomFilterSheet ref={bottomSheetRef} handleSheetChanges={handleSheetChanges} />
+
+      {/* Detalles de evento */}
+      <CustomBottomEventDetails ref={eventBottomSheetRef} />
 
       {/* FAB */}
       <CustomCalendarFAB />
