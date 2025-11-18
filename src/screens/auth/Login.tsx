@@ -5,17 +5,35 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { signIn, validateInviteCode } from '../../services/auth'
 import { useNavigation } from '@react-navigation/native'
 import { useDispatch } from 'react-redux'
-import { setCodeAndInitialData } from '../../store/slices/authSlice'
+import { loginFailure, loginStart, loginSuccess, setCodeAndInitialData } from '../../store/slices/authSlice'
+import { useAppSelector } from '../../store'
 
 const Login = () => {
     const { colors, fonts } = useTheme()
 
     const navigation = useNavigation();
+    const authState = useAppSelector(state => state.authState)
     const dispatch = useDispatch()
 
     const [signUpCode, setSignUpCode] = useState('')
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
     const [inviteError, setInviteError] = useState('');
+    const [loginForm, setLoginForm] = useState({
+        email: '',
+        password: ''
+    })
+
+    const handleLogin = async () => {
+        try {
+            dispatch(loginStart())
+            const user = await signIn(loginForm.email, loginForm.password)
+            dispatch(loginSuccess(user))
+
+        } catch (error) {
+            dispatch(loginFailure(error))
+            console.error(error)
+        }
+    }
 
     return (
         <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss} accessible={false}>
@@ -28,8 +46,29 @@ const Login = () => {
             }}>
                 <Text variant='headlineMedium' style={{ fontWeight: 'bold' }}>Agrisilo</Text>
                 <View style={{ width: '100%', alignItems: 'center', gap: 10 }}>
-                    <TextInput left={<TextInput.Icon icon="account-outline" />} label={'Correo'} mode='outlined' style={{ width: '90%', }} />
-                    <TextInput left={<TextInput.Icon icon="lock-outline" />} label={'Contraseña'} mode='outlined' style={{ width: '90%', }} />
+                    <TextInput
+                        left={<TextInput.Icon icon="account-outline" />}
+                        label={'Correo'}
+                        keyboardType='email-address'
+                        autoCapitalize='none'
+                        mode='outlined'
+                        style={{ width: '90%', }}
+                        value={loginForm.email}
+                        onChangeText={text => {
+                            setLoginForm({ ...loginForm, email: text })
+                        }}
+                    />
+                    <TextInput
+                        left={<TextInput.Icon icon="lock-outline" />}
+                        label={'Contraseña'}
+                        mode='outlined'
+                        style={{ width: '90%', }}
+                        value={loginForm.password}
+                        onChangeText={text => {
+                            setLoginForm({ ...loginForm, password: text })
+                        }}
+                        secureTextEntry
+                    />
                     <View style={{ alignItems: 'flex-end', width: '100%' }}>
                         <Button style={{ alignSelf: 'flex-end' }}>
                             <Text style={{ fontWeight: 'bold', color: colors.primary }} >
@@ -44,9 +83,15 @@ const Login = () => {
                     </View>
                 </View>
 
-                <Button mode='contained' style={{ borderRadius: 5, width: '90%', padding: 4 }} onPress={() => {
-                    signIn('carlosvillalobos247@gmail.com', 'carlos')
-                }}>
+                <Button
+                    mode='contained'
+                    loading={authState.loading}
+                    style={{ borderRadius: 5, width: '90%', padding: 4 }}
+                    onPress={() => {
+                        if (loginForm.email !== '' && loginForm.password !== '') {
+                            handleLogin()
+                        }
+                    }}>
                     <Text style={{ color: colors.onPrimary, fontSize: fonts.titleMedium.fontSize, fontWeight: 'bold' }}>
                         Iniciar sesión
                     </Text>
