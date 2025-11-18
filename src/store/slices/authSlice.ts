@@ -44,6 +44,9 @@ const authSlice = createSlice({
         logout: (state) => {
             state.user = null;
         },
+        setAllUsers: (state, action) => {
+            state.users = action.payload
+        },
         setCodeAndInitialData: (state, action: PayloadAction<InvitePayload>) => {
             state.code = action.payload.code
             state.inviteData = action.payload.inviteData
@@ -61,6 +64,7 @@ export const {
     loginFailure,
     logout,
     setCodeAndInitialData,
-    clearInviteState
+    clearInviteState,
+    setAllUsers
 } = authSlice.actions;
 export default authSlice.reducer;

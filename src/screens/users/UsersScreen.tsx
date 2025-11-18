@@ -1,10 +1,11 @@
 import { Alert, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Dialog, FAB, Portal, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import { useDispatch } from 'react-redux'
-import { createInvite, sendInviteEmail } from '../../services/auth'
+import { createInvite, getAllUsers, sendInviteEmail } from '../../services/auth'
+import { setAllUsers } from '../../store/slices/authSlice'
 
 const UsersScreen = () => {
     const authState = useAppSelector(state => state.authState)
@@ -13,6 +14,15 @@ const UsersScreen = () => {
     const [filterValue, setFilterValue] = useState('')
     const [newUserEmail, setNewUserEmail] = useState('')
     const [inviteModalVisible, setInviteModalVisible] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = getAllUsers((data) => {
+            console.log('users', data)
+            dispatch(setAllUsers(data))
+        })
+        return () => unsubscribe()
+    }, [])
+
     return (
         <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
