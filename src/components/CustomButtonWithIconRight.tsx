@@ -45,7 +45,11 @@ const CustomButtonWithIconRight = ({ mode, label, icon, children, onPress, label
                         children
                     }
                 </View>
-                <Icon source={icon} size={20} />
+                {
+                    icon !== 'none' && (
+                        <Icon source={icon} size={20} />
+                    )
+                }
             </View>
         </Button>
     )
