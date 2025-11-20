@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore'
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth"
+import { createUserWithEmailAndPassword, EmailAuthProvider, getAuth, signInWithEmailAndPassword, signOut } from "@react-native-firebase/auth"
 import { User } from "../interfaces/auth";
 import { Alert, Linking } from 'react-native';
 
@@ -11,7 +11,20 @@ const invitesCollection = firestore().collection('Invites')
 export const signIn = async (email: string, password: string) => {
     try {
         const res = await signInWithEmailAndPassword(auth, email, password);
-        return res.user.toJSON();
+        const userFS = getUser(res.user.uid)
+
+        return { user: res.user.toJSON(), userFS };
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+export const getUser = async (uid: string) => {
+    try {
+        const userFS = await userCollection.doc(uid).get();
+
+        return userFS.data();
+
     } catch (error) {
         console.error(error)
     }
@@ -32,29 +45,58 @@ export const signUp = async (email: string, password: string, name: string) => {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
 
+    await user.updateProfile({
+        displayName: name
+    });
+
     await saveUser({
-        id: '',
+        id: user.uid,
         email,
         name,
-        status: 'active'
+        status: 'active',
+        newPassword: '',
+        admin: false,
     })
 
     return user.toJSON();
 };
 
-export const saveUser = async (user: User) => {
+export const saveUser = async (user: User & { newPassword: string, currentPassword?: string }) => {
+
     try {
-        if (user.id === '') {
-            const { id, ...rest } = user;
-            await userCollection.add(rest)
-        } else {
-            await userCollection.doc(user.id).set({
-                ...user
-            })
+        const { id, newPassword, currentPassword, ...rest } = user;
+        const currentUser = auth.currentUser
+
+        if (!currentUser) throw new Error("Usuario no autenticado");
+
+        if (newPassword && currentPassword) {
+            const credential = EmailAuthProvider.credential(
+                currentUser.email!,
+                currentPassword
+            );
+
+            await currentUser.reauthenticateWithCredential(credential);
         }
+
+        if (user.name !== currentUser?.displayName) {
+            await currentUser?.updateProfile({
+                displayName: user.name,
+            });
+        }
+
+        if (newPassword !== '') {
+            await currentUser?.updatePassword(newPassword);
+        }
+
+        await currentUser?.reload();
+
+        await userCollection.doc(id).set({
+            ...rest
+        })
     } catch (error) {
         console.error(error)
     }
+
 }
 
 export const getAllUsers = (callback: (user: User[]) => void) => {
