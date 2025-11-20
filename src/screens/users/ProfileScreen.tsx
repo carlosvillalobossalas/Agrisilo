@@ -116,19 +116,7 @@ const ProfileScreen = () => {
                     importantForAutofill="no"
                 />
             </View>
-
-            {/* <View style={{ gap: 5, flexDirection: 'row', alignItems: 'center'}}>
-                <IconButton
-                    icon={userForm.admin ? 'check-circle' : 'circle-outline'}
-                    size={24}
-                    iconColor={userForm.admin ? '#0A84FF' : '#C0C0C0'}
-                    onPress={() => {
-                        setUserForm({ ...userForm, admin: !userForm.admin })
-                    }}
-                    style={{ margin: 0 }}
-                /> 
-                <Text style={{ fontWeight: 'bold' }}>Admin?</Text>
-            </View> */}
+          
             <Button
                 mode="contained"
                 loading={authState.loading}
