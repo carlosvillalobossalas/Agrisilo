@@ -3,7 +3,7 @@ import { View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signUp, markInviteAsUsed } from '../../services/auth'; // Ajusta el path si es diferente
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../../store';
 import { clearInviteState } from '../../store/slices/authSlice';
 import { useDispatch } from 'react-redux';
