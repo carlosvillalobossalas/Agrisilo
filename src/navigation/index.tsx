@@ -30,6 +30,8 @@ import Icon from '@react-native-vector-icons/material-design-icons';
 import { TouchableOpacity, View } from 'react-native';
 import UsersScreen from '../screens/users/UsersScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
+import { getUser } from '../services/auth';
+import ProfileScreen from '../screens/users/ProfileScreen';
 
 
 
@@ -236,6 +238,16 @@ const RootStack = createNativeStackNavigator({
                 headerTitle: 'Usuarios',
             },
         },
+        ProfileScreen: {
+            screen: ProfileScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Mi Perfil',
+            },
+        },
     }
 })
 
@@ -256,19 +268,23 @@ export default function Navigation() {
     const [initializing, setInitializing] = useState(true)
 
 
-    const handleAuthStateChanged = (res: any) => {
-        if (!user) {
+    const handleAuthStateChanged = async (res: any) => {
+
+        const userResponse = res as FirebaseAuthTypes.User | null;
+        const user = userResponse?.toJSON()
+        if (userResponse) {
             dispatch(loginStart())
-            const userResponse = res as FirebaseAuthTypes.User | null;
-            const userJson = userResponse?.toJSON()
-            console.log("🚀 ~ handleAuthStateChanged ~ user:", userJson)
-            if (userJson) {
-                dispatch(loginSuccess(userJson))
+
+            const userFS = await getUser(userResponse?.uid)
+            console.log(userFS)
+            if (user) {
+                dispatch(loginSuccess({ user, userFS }))
             } else {
                 dispatch(loginFailure('No user logged in'))
             }
-        }
 
+
+        }
         if (initializing) setInitializing(false)
 
     }
