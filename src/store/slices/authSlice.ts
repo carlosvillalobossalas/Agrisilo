@@ -5,6 +5,7 @@ import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 
 interface AuthState {
     user: FirebaseAuthTypes.User | null;
+    userFS: User | null;
     users: User[];
     code: string
     inviteData: FirebaseFirestoreTypes.DocumentData | undefined
@@ -18,6 +19,7 @@ interface InvitePayload {
 
 const initialState: AuthState = {
     user: null,
+    userFS: null,
     users: [],
     code: '',
     inviteData: undefined,
@@ -29,13 +31,18 @@ const authSlice = createSlice({
     name: "authState",
     initialState,
     reducers: {
+        authLoading: (state, action) => {
+            state.loading = action.payload
+        },
         loginStart: (state) => {
             state.loading = true;
             state.error = null;
         },
         loginSuccess: (state, action) => {
             state.loading = false;
-            state.user = action.payload;
+            console.log(action.payload)
+            state.user = action.payload.user;
+            state.userFS = action.payload.userFS
         },
         loginFailure: (state, action) => {
             state.loading = false;
@@ -43,6 +50,7 @@ const authSlice = createSlice({
         },
         logout: (state) => {
             state.user = null;
+            state.loading = false;
         },
         setAllUsers: (state, action) => {
             state.users = action.payload
@@ -59,6 +67,7 @@ const authSlice = createSlice({
 });
 
 export const {
+    authLoading,
     loginStart,
     loginSuccess,
     loginFailure,
