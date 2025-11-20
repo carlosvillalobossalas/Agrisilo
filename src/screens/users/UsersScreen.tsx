@@ -42,9 +42,12 @@ const UsersScreen = () => {
             {
                 authState.users
                     .filter(user => {
+                        if (user.email === authState.user?.email) return false
                         if (filterValue === '') {
                             return true
                         }
+                        console.log(user)
+                        console.log(authState)
                         return user.name.toLowerCase().includes(filterValue.toLowerCase())
                     })
                     .map((user) => (
@@ -52,26 +55,28 @@ const UsersScreen = () => {
                             key={user.id}
                             mode='elevated'
                             label={user.name}
-                            onPress={() => {
-                                // dispatch(setClient(client))
-                                // navigation.navigate('ClientScreen')
-                            }}
-                            icon='chevron-right'
+                            onPress={authState.userFS?.admin ? undefined : undefined}
+                            icon={authState.userFS?.admin ? 'chevron-right' : 'none'}
                             labelStyle={{ fontWeight: 'bold' }}
                         >
                             <Text>{user.email}</Text>
                         </CustomButtonWithIconRight>
                     ))
             }
-            <FAB
-                icon={'plus'}
-                onPress={() => setInviteModalVisible(true)}
-                style={{
-                    position: 'absolute',
-                    margin: 16,
-                    right: 10,
-                    bottom: 20
-                }} />
+            {
+                authState.userFS?.admin && (
+                    <FAB
+                        icon={'plus'}
+                        onPress={() => setInviteModalVisible(true)}
+                        style={{
+                            position: 'absolute',
+                            margin: 16,
+                            right: 10,
+                            bottom: 20
+                        }} />
+                )
+            }
+
 
             <Portal>
                 <Dialog
