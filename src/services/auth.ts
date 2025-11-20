@@ -11,7 +11,9 @@ const invitesCollection = firestore().collection('Invites')
 export const signIn = async (email: string, password: string) => {
     try {
         const res = await signInWithEmailAndPassword(auth, email, password);
-        const userFS = getUser(res.user.uid)
+        const userFS = await getUser(res.user.uid)
+        //TODO: improve 
+        if (userFS?.status !== 'active') return { user: null, userFS: null };
 
         return { user: res.user.toJSON(), userFS };
     } catch (error) {
@@ -23,7 +25,14 @@ export const getUser = async (uid: string) => {
     try {
         const userFS = await userCollection.doc(uid).get();
 
-        return userFS.data();
+        const data = userFS.data();
+
+        if (!data) return null;
+
+        if (data.status !== 'active') return null;
+
+        return { id: uid, ...userFS.data() as Omit<User, 'id'> }
+
 
     } catch (error) {
         console.error(error)
@@ -97,6 +106,16 @@ export const saveUser = async (user: User & { newPassword: string, currentPasswo
         console.error(error)
     }
 
+}
+
+export const updateUser = async (user: User) => {
+    try {
+        await userCollection.doc(user.id).set({
+            ...user
+        })
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 export const getAllUsers = (callback: (user: User[]) => void) => {

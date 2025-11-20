@@ -5,11 +5,13 @@ import { useAppSelector } from '../../store'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import { useDispatch } from 'react-redux'
 import { createInvite, getAllUsers, sendInviteEmail } from '../../services/auth'
-import { setAllUsers } from '../../store/slices/authSlice'
+import { setAllUsers, setUserFSNotLogged } from '../../store/slices/authSlice'
+import { useNavigation } from '@react-navigation/native'
 
 const UsersScreen = () => {
     const authState = useAppSelector(state => state.authState)
     const dispatch = useDispatch()
+    const navigation = useNavigation()
 
     const [filterValue, setFilterValue] = useState('')
     const [newUserEmail, setNewUserEmail] = useState('')
@@ -55,7 +57,12 @@ const UsersScreen = () => {
                             key={user.id}
                             mode='elevated'
                             label={user.name}
-                            onPress={authState.userFS?.admin ? undefined : undefined}
+                            onPress={authState.userFS?.admin ?
+                                () => {
+                                    navigation.navigate('UserScreen')
+                                    dispatch(setUserFSNotLogged(user))
+                                }
+                                : undefined}
                             icon={authState.userFS?.admin ? 'chevron-right' : 'none'}
                             labelStyle={{ fontWeight: 'bold' }}
                         >

@@ -7,6 +7,7 @@ interface AuthState {
     user: FirebaseAuthTypes.User | null;
     userFS: User | null;
     users: User[];
+    userFSNotLogged: User | null;
     code: string
     inviteData: FirebaseFirestoreTypes.DocumentData | undefined
     loading: boolean;
@@ -21,6 +22,7 @@ const initialState: AuthState = {
     user: null,
     userFS: null,
     users: [],
+    userFSNotLogged: null,
     code: '',
     inviteData: undefined,
     loading: false,
@@ -62,6 +64,9 @@ const authSlice = createSlice({
         clearInviteState: (state) => {
             state.code = '';
             state.inviteData = undefined;
+        },
+        setUserFSNotLogged: (state, action) => {
+            state.userFSNotLogged = action.payload
         }
     },
 });
@@ -74,6 +79,7 @@ export const {
     logout,
     setCodeAndInitialData,
     clearInviteState,
-    setAllUsers
+    setAllUsers,
+    setUserFSNotLogged
 } = authSlice.actions;
 export default authSlice.reducer;

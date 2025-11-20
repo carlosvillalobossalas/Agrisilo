@@ -32,6 +32,7 @@ import UsersScreen from '../screens/users/UsersScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import { getUser } from '../services/auth';
 import ProfileScreen from '../screens/users/ProfileScreen';
+import UserScreen from '../screens/users/UserScreen';
 
 
 
@@ -238,6 +239,16 @@ const RootStack = createNativeStackNavigator({
                 headerTitle: 'Usuarios',
             },
         },
+        UserScreen: {
+            screen: UserScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Usuario',
+            },
+        },
         ProfileScreen: {
             screen: ProfileScreen,
             headerStyle: {
@@ -277,7 +288,7 @@ export default function Navigation() {
 
             const userFS = await getUser(userResponse?.uid)
             console.log(userFS)
-            if (user) {
+            if (user && userFS) {
                 dispatch(loginSuccess({ user, userFS }))
             } else {
                 dispatch(loginFailure('No user logged in'))
