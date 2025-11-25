@@ -10,4 +10,21 @@ export interface IEvent {
     client: string
 }
 
+export interface EventFilters {
+    clients: string[];
+    services: string[];
+    statuses: string[];
+    startDate: string;
+    endDate: string;
+}
+
+export interface EventsPDFRow {
+    client: string
+    service: string
+    status: string
+    startDate: string
+    endDate: string
+    name: string
+}
+
 export type CalendarEvent = ICalendarEventBase & { color?: string, id: string }

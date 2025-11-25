@@ -27,12 +27,15 @@ import EventScreen from '../screens/events/EventScreen';
 import { getAllEvents } from '../services/events';
 import { setAllEvents } from '../store/slices/eventSlice';
 import Icon from '@react-native-vector-icons/material-design-icons';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import UsersScreen from '../screens/users/UsersScreen';
 import SignUpScreen from '../screens/auth/SignUpScreen';
 import { getUser } from '../services/auth';
 import ProfileScreen from '../screens/users/ProfileScreen';
 import UserScreen from '../screens/users/UserScreen';
+import EventToPdfScreen from '../screens/events/EventToPdfScreen';
+import PdfViewerScreen from '../screens/events/PdfViewerScreen';
+import { HeaderShareButton } from '../components/CustomHeaderShareButton';
 
 
 
@@ -142,6 +145,27 @@ const RootStack = createNativeStackNavigator({
             options: {
                 headerShown: true,
                 headerTitle: 'Agregar Evento',
+            },
+        },
+        EventToPdfScreen: {
+            screen: EventToPdfScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Exportar tareas',
+            },
+        },
+        PdfViewerScreen: {
+            screen: PdfViewerScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'PDF',
+                headerRight: () => <HeaderShareButton />,
             },
         },
         ClientScreen: {

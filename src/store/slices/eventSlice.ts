@@ -12,6 +12,7 @@ interface EventState {
         serviceFilter: string
         colorBy: string
     }
+    pdfPath?: string
 }
 
 const initialState: EventState = {
@@ -19,6 +20,7 @@ const initialState: EventState = {
     event: null,
     loading: false,
     error: null,
+    pdfPath: undefined,
     config: {
         statusFilter: 'none',
         clientFilter: 'none',
@@ -57,10 +59,13 @@ const eventSlice = createSlice({
             if (event) {
                 state.event = event
             }
+        },
+        setPDFPath: (state, action) => {
+            state.pdfPath = action.payload
         }
     }
 })
 
 
-export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter, setEventByCalendarEvent } = eventSlice.actions
+export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter, setEventByCalendarEvent, setPDFPath } = eventSlice.actions
 export default eventSlice.reducer

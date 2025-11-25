@@ -32,8 +32,11 @@ const CustomCalendarFAB = () => {
                     {
                         label: 'Agregar estado', icon: 'check', onPress: () => { navigation.navigate('StatusScreen') }
                     },
+
                     {
-                        label: 'Exportar PDF', icon: 'file-pdf-box', onPress: () => { }
+                        label: 'Exportar PDF', icon: 'file-pdf-box', onPress: () => {
+                            navigation.navigate('EventToPdfScreen')
+                        }
                     }
                 ]}
                 onStateChange={onFABStateChange}
