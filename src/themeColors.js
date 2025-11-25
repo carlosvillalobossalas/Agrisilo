@@ -1,62 +1,76 @@
 export const customColors = {
-    "colors": {
-        "primary": "#1380ec", // --primary-color
-        "onPrimary": "#ffffff",
-        "primaryContainer": "#e0efff", // usamos el secondary como container claro
-        "onPrimaryContainer": "#1a202c",
+  "colors": {
+    // --- Colores principales (marca) ---
+    primary: "#B5CE2F",
+    onPrimary: "#283133",
 
-        "secondary": "#e0efff", // --secondary-color
-        "onSecondary": "#1a202c",
-        "secondaryContainer": "#1380ec20", // tono translúcido del primary
-        "onSecondaryContainer": "#1a202c",
+    // contenedor claro derivado del primario
+    primaryContainer: "#D7E88A",
+    onPrimaryContainer: "#283133",
 
-        "tertiary": "#ffc107", // --accent-color
-        "onTertiary": "#1a202c",
-        "tertiaryContainer": "#fff4d0",
-        "onTertiaryContainer": "#4a5568",
+    secondary: "#283133",
+    onSecondary: "#FFFFFF",
 
-        "error": "#dc3545", // --danger-color
-        "onError": "#ffffff",
-        "errorContainer": "#f8d7da",
-        "onErrorContainer": "#721c24",
+    // contenedor claro pero derivado de #283133
+    secondaryContainer: "#4B575B",
+    onSecondaryContainer: "#FFFFFF",
 
-        "background": "#f8faff", // --background-color
-        "onBackground": "#1a202c", // --text-primary
+    // --- Tercarios (derivados de la marca) ---
+    tertiary: "#B5CE2F",              // mismo verde brand (coherente)
+    onTertiary: "#283133",
+    tertiaryContainer: "#D7E88A",     // versión clara del verde
+    onTertiaryContainer: "#283133",
 
-        "surface": "#ffffff",
-        "onSurface": "#1a202c",
-        "surfaceVariant": "#e0efff",
-        "onSurfaceVariant": "#4a5568", // --text-secondary
+    // --- Error (lo dejo estándar pero adaptado al brand oscuro) ---
+    error: "#B00020",
+    onError: "#FFFFFF",
+    errorContainer: "#F8D7DA",
+    onErrorContainer: "#721C24",
 
-        "outline": "#4a5568",
-        "outlineVariant": "#e0efff",
+    // --- Fondo y Superficies (cambiados al color base oscuro y claro) ---
+    background: "#FFFFFF",
+    onBackground: "#283133",
 
-        "shadow": "#000000",
-        "scrim": "#000000",
+    surface: "#FFFFFF",
+    onSurface: "#283133",
 
-        "inverseSurface": "#1a202c",
-        "inverseOnSurface": "#f8faff",
-        "inversePrimary": "#e0efff",
+    surfaceVariant: "#E4E8E9",       // gris claro derivado de #283133
+    onSurfaceVariant: "#5A6669",
 
-        "elevation": {
-            "level0": "transparent",
-            "level1": "#f8faff",
-            "level2": "#e0efff",
-            "level3": "#d6e9ff",
-            "level4": "#c2e0ff",
-            "level5": "#b3daff"
-        },
+    // --- Outline / Bordes ---
+    outline: "#5A6669",
+    outlineVariant: "#D5DBDC",
 
-        "surfaceDisabled": "rgba(26, 32, 44, 0.12)",
-        "onSurfaceDisabled": "rgba(26, 32, 44, 0.38)",
+    // --- Sombra y Scrim ---
+    shadow: "#000000",
+    scrim: "#000000",
 
-        "backdrop": "rgba(26, 32, 44, 0.4)",
+    // --- Inverse (usado en Appbar, Modal, Drawer) ---
+    inverseSurface: "#283133",
+    inverseOnSurface: "#FFFFFF",
+    inversePrimary: "#B5CE2F",
 
-        // extras que puedes mapear:
-        "success": "#28a745",
-        "onSuccess": "#ffffff",
-        "successContainer": "#d4edda",
-        "onSuccessContainer": "#155724"
-    }
+    // --- Elevaciones (basadas en el oscuro con transparencia) ---
+    elevation: {
+      level0: "transparent",
+      level1: "rgba(40, 49, 51, 0.05)",
+      level2: "rgba(40, 49, 51, 0.08)",
+      level3: "rgba(40, 49, 51, 0.10)",
+      level4: "rgba(40, 49, 51, 0.12)",
+      level5: "rgba(40, 49, 51, 0.14)"
+    },
 
+    // --- Disabled States ---
+    surfaceDisabled: "rgba(40, 49, 51, 0.12)",
+    onSurfaceDisabled: "rgba(40, 49, 51, 0.38)",
+
+    // --- Backdrop ---
+    backdrop: "rgba(40, 49, 51, 0.4)",
+
+    // --- Extras opcionales ---
+    success: "#7CC44A",               // verde armónico al primario
+    onSuccess: "#283133",
+    successContainer: "#D7EEC1",
+    onSuccessContainer: "#283133"
+  }
 }

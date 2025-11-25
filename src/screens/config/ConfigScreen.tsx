@@ -28,7 +28,8 @@ const ConfigScreen = () => {
           marginTop: 20,
           borderRadius: 10,
           width: '100%',
-          height: 62
+          height: 62,
+          backgroundColor: 'white',
         }}
         contentStyle={{
           height: 62,

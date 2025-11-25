@@ -1,23 +1,24 @@
 import { View, Text, StyleProp, TextStyle } from 'react-native'
 import React from 'react'
 import { Button, Icon } from 'react-native-paper'
-import ColorPicker from 'reanimated-color-picker'
+
 interface CustomButtonWithIconRightProps {
     label: string
     icon: string
-    mode: string
+    mode?: "elevated" | "text" | "outlined" | "contained" | "contained-tonal" | undefined
     labelStyle?: StyleProp<TextStyle>
     children?: React.ReactNode
     onPress?: () => void
 }
-const CustomButtonWithIconRight = ({ mode, label, icon, children, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
+const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
     return (
         <Button
-            mode="elevated"
+            mode={mode}
             style={{
                 borderRadius: 10,
                 width: '100%',
                 height: 62,
+                backgroundColor: 'white',
             }}
             contentStyle={{
                 height: 62,
@@ -40,7 +41,10 @@ const CustomButtonWithIconRight = ({ mode, label, icon, children, onPress, label
                         gap: 2
                     }}
                 >
-                    <Text style={{ fontSize: 16, ...labelStyle }}>{label}</Text>
+                    <Text style={{
+                        fontSize: 16,
+                        ...labelStyle
+                    }}>{label}</Text>
                     {
                         children
                     }

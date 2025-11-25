@@ -61,10 +61,18 @@ const AuthStack = createNativeStackNavigator({
 
 const AppTabs = createBottomTabNavigator({
     initialRouteName: 'Calendario',
-    screenOptions: {
-        headerStyle: {
-            height: 110
-        }
+    screenOptions: () => {
+        const { colors } = useTheme();
+        return {
+            headerStyle: {
+                height: 110
+            },
+            tabBarActiveTintColor: colors.primary,     // 👈 texto del tab activo
+            tabBarInactiveTintColor: colors.outline,   // 👈 texto del tab inactivo
+            tabBarStyle: {
+                backgroundColor: colors.surface,        // opcional, combina con tu tema
+            },
+        };
     },
     screens: {
         Calendario: {

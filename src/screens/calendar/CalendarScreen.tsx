@@ -1,21 +1,23 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { Calendar, Mode, modeToNum } from 'react-native-big-calendar'
-import { IconButton, SegmentedButtons, Text } from 'react-native-paper'
+import { CalendarEvent } from '../../interfaces/events'
+import { IconButton, SegmentedButtons, Text, useTheme } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { View } from 'react-native'
-import dayjs from 'dayjs'
-import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
-import CustomCalendarFAB from '../../components/CustomCalendarFAB'
+import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
-import { CalendarEvent } from '../../interfaces/events'
-import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
+import { View } from 'react-native'
 import CustomBottomEventDetails from '../../components/CustomBottomEventDetails'
+import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
+import CustomCalendarFAB from '../../components/CustomCalendarFAB'
+import dayjs from 'dayjs'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 
 const today = new Date()
 
 const CalendarScreen = () => {
+
+  const theme = useTheme()
 
   const eventState = useAppSelector(state => state.eventState)
   const serviceState = useAppSelector(state => state.serviceState)
@@ -153,13 +155,7 @@ const CalendarScreen = () => {
             { value: 'schedule', label: 'Agenda' },
           ]}
           style={{
-            backgroundColor: '#e5e5e5',
             borderRadius: 112,
-          }}
-          theme={{
-            colors: {
-              secondaryContainer: 'white',
-            },
           }}
         />
       </View>
@@ -176,8 +172,6 @@ const CalendarScreen = () => {
           borderRadius: 6,
         })}
         onPressEvent={(pressEvent) => {
-          console.log(pressEvent)
-          console.log(mode)
           setDate(pressEvent.start)
           if (mode === 'month') {
             setMode('day')
@@ -189,6 +183,13 @@ const CalendarScreen = () => {
         onPressCell={(pressDate) => {
           setDate(pressDate)
           setMode('day')
+        }}
+        theme={{
+          palette: {
+            primary: {
+              main: theme.colors.primary,
+            }
+          }
         }}
         eventMinHeightForMonthView={20}
         maxVisibleEventCount={2}

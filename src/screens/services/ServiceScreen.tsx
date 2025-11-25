@@ -70,7 +70,6 @@ const ServiceScreen = () => {
                     <TouchableOpacity
                         onPress={confirmDelete}
                         style={{
-                            backgroundColor: 'rgba(229, 211, 211, 0.25)',
                             padding: 5,
                             borderRadius: 20,
                         }}

@@ -1,11 +1,11 @@
-import { View } from 'react-native'
-import React, { useState } from 'react'
+import { setClient } from '../../store/slices/clientSlice'
+import { Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
+import { View } from 'react-native'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
-import { setClient } from '../../store/slices/clientSlice'
-import { Text, TextInput } from 'react-native-paper'
+import React, { useState } from 'react'
 
 const ClientsScreen = () => {
     const clientState = useAppSelector(state => state.clientState)
@@ -41,7 +41,6 @@ const ClientsScreen = () => {
                     .map((client) => (
                         <CustomButtonWithIconRight
                             key={client.id}
-                            mode='elevated'
                             label={client.name}
                             onPress={() => {
                                 dispatch(setClient(client))

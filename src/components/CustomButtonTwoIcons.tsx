@@ -20,6 +20,7 @@ const CustomButtonTwoIcons = ({ label, iconLeft, iconRight, onPress }: CustomBut
                 borderRadius: 10,
                 width: '100%',
                 height: 62,
+                backgroundColor: 'white',
             }}
             contentStyle={{
                 height: 62,

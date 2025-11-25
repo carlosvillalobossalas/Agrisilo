@@ -1,16 +1,16 @@
-import React, { useEffect } from 'react'
-import { DefaultTheme, PaperProvider } from 'react-native-paper'
-import { customColors } from './src/themeColors';
-import { store } from './src/store';
-import { Provider } from 'react-redux';
-import Navigation from './src/navigation';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import dayjs from 'dayjs';
-import 'react-native-reanimated'
 import 'dayjs/locale/es'; // 👈 importa el idioma
+import 'react-native-reanimated'
 import { Alert } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { customColors } from './src/themeColors';
+import { DefaultTheme, PaperProvider } from 'react-native-paper'
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import { store } from './src/store';
+import dayjs from 'dayjs';
 import messaging from '@react-native-firebase/messaging';
+import Navigation from './src/navigation';
+import React, { useEffect } from 'react'
 
 dayjs.locale('es');
 

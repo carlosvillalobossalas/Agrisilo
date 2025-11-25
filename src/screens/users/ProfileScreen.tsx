@@ -116,14 +116,16 @@ const ProfileScreen = () => {
                     importantForAutofill="no"
                 />
             </View>
-          
+
             <Button
                 mode="contained"
                 loading={authState.loading}
                 onPress={handleSubmit}
                 style={{ marginTop: 'auto', marginBottom: 20 }}
             >
-                Guardar cuenta
+                <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                    Guardar cuenta
+                </Text>
             </Button>
         </View>
     )

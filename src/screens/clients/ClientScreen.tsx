@@ -11,6 +11,8 @@ import { deleteClient, saveClient } from '../../services/clients'
 import Icon from '@react-native-vector-icons/material-design-icons';
 
 const ClientScreen = () => {
+
+
   const clientState = useAppSelector(state => state.clientState)
   const dispatch = useDispatch()
 
@@ -75,7 +77,6 @@ const ClientScreen = () => {
           <TouchableOpacity
             onPress={confirmDelete}
             style={{
-              backgroundColor: 'rgba(229, 211, 211, 0.25)',
               padding: 5,
               borderRadius: 20,
             }}
