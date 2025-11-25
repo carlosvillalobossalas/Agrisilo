@@ -108,6 +108,16 @@ export const saveUser = async (user: User & { newPassword: string, currentPasswo
 
 }
 
+export const saveUserFCMToken = async (uid: string, token: string) => {
+    try {
+        await userCollection.doc(uid).update({
+            fcmToken: token
+        });
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export const updateUser = async (user: User) => {
     try {
         await userCollection.doc(user.id).set({

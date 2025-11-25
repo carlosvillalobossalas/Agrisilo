@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "agrisilo-1f810",
+    "staging": "agrisilo-1f810"
+  },
+  "targets": {},
+  "etags": {}
+}

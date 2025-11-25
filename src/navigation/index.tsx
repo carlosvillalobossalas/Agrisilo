@@ -1,42 +1,42 @@
-import React, { useEffect, useState } from 'react'
-import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
-import { useAppSelector } from '../store';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from '../screens/auth/Login';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 import { FirebaseAuthTypes, getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
-import { useDispatch } from 'react-redux';
-import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlice';
-import CalendarScreen from '../screens/calendar/CalendarScreen';
-import { Button, IconButton, Text, useTheme } from 'react-native-paper';
-import ToDoScreen from '../screens/todos/ToDoScreen';
-import ClientScreen from '../screens/clients/ClientScreen';
-import ConfigScreen from '../screens/config/ConfigScreen';
-import ServiceScreen from '../screens/services/ServiceScreen';
-import ClientsScreen from '../screens/clients/ClientsScreen';
-import StatusScreen from '../screens/status/StatusScreen';
-import { getAllStatus } from '../services/status';
-import { setAllStatus } from '../store/slices/statusSlice';
-import StatusesScreen from '../screens/status/StatusesScreen';
-import ServicesScreen from '../screens/services/ServicesScreen';
-import { getAllServices } from '../services/services';
-import { setAllServices } from '../store/slices/serviceSlice';
 import { getAllClients } from '../services/clients';
-import { setAllClients } from '../store/slices/clientSlice';
-import EventScreen from '../screens/events/EventScreen';
 import { getAllEvents } from '../services/events';
-import { setAllEvents } from '../store/slices/eventSlice';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import { TouchableOpacity } from 'react-native';
-import UsersScreen from '../screens/users/UsersScreen';
-import SignUpScreen from '../screens/auth/SignUpScreen';
-import { getUser } from '../services/auth';
-import ProfileScreen from '../screens/users/ProfileScreen';
-import UserScreen from '../screens/users/UserScreen';
-import EventToPdfScreen from '../screens/events/EventToPdfScreen';
-import PdfViewerScreen from '../screens/events/PdfViewerScreen';
+import { getAllServices } from '../services/services';
+import { getAllStatus } from '../services/status';
+import { getUser, saveUserFCMToken } from '../services/auth';
 import { HeaderShareButton } from '../components/CustomHeaderShareButton';
-
+import { IconButton, useTheme } from 'react-native-paper';
+import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlice';
+import { setAllClients } from '../store/slices/clientSlice';
+import { setAllEvents } from '../store/slices/eventSlice';
+import { setAllServices } from '../store/slices/serviceSlice';
+import { setAllStatus } from '../store/slices/statusSlice';
+import { TouchableOpacity } from 'react-native';
+import { useAppSelector } from '../store';
+import { useDispatch } from 'react-redux';
+import CalendarScreen from '../screens/calendar/CalendarScreen';
+import ClientScreen from '../screens/clients/ClientScreen';
+import ClientsScreen from '../screens/clients/ClientsScreen';
+import ConfigScreen from '../screens/config/ConfigScreen';
+import EventScreen from '../screens/events/EventScreen';
+import EventToPdfScreen from '../screens/events/EventToPdfScreen';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import Login from '../screens/auth/Login';
+import messaging from '@react-native-firebase/messaging';
+import PdfViewerScreen from '../screens/events/PdfViewerScreen';
+import ProfileScreen from '../screens/users/ProfileScreen';
+import React, { useEffect, useState } from 'react'
+import ServiceScreen from '../screens/services/ServiceScreen';
+import ServicesScreen from '../screens/services/ServicesScreen';
+import SignUpScreen from '../screens/auth/SignUpScreen';
+import StatusesScreen from '../screens/status/StatusesScreen';
+import StatusScreen from '../screens/status/StatusScreen';
+import ToDoScreen from '../screens/todos/ToDoScreen';
+import UserScreen from '../screens/users/UserScreen';
+import UsersScreen from '../screens/users/UsersScreen';
 
 
 const AuthStack = createNativeStackNavigator({
@@ -301,6 +301,34 @@ export default function Navigation() {
     const dispatch = useDispatch();
 
     const [initializing, setInitializing] = useState(true)
+
+    const requestPermissionAndToken = async () => {
+        await messaging().registerDeviceForRemoteMessages();
+        const authStatus = await messaging().requestPermission();
+        console.log("🚀 ~ requestPermissionAndToken ~ authStatus:", authStatus)
+        const enabled =
+            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+            const fcmToken = await messaging().getToken();
+            console.log("TOKEN FCM:", fcmToken);
+
+            // Guardarlo en tu colección USERS
+            // para luego enviar notificaciones a todos
+            console.log(user)
+            await saveUserFCMToken(user!.uid, fcmToken);
+
+
+
+        }
+    };
+
+    useEffect(() => {
+        if (user)
+            requestPermissionAndToken();
+    }, [user]);
+
 
 
     const handleAuthStateChanged = async (res: any) => {
