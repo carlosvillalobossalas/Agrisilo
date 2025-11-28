@@ -12,7 +12,7 @@ export const signIn = async (email: string, password: string) => {
     try {
         const res = await signInWithEmailAndPassword(auth, email, password);
         const userFS = await getUser(res.user.uid)
-        //TODO: improve 
+        //TODO: improve
         if (userFS?.status !== 'active') return { user: null, userFS: null };
 
         return { user: res.user.toJSON(), userFS };
@@ -232,3 +232,13 @@ export const sendInviteEmail = async (email: string, code: string) => {
 
     Linking.openURL(mailUrl);
 };
+
+export const sendPasswordResetEmail = async (email: string) => {
+    try {
+        await auth.sendPasswordResetEmail(email);
+        return true
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
