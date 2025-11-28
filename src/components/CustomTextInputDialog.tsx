@@ -1,4 +1,5 @@
 import React from 'react'
+import { KeyboardTypeOptions } from 'react-native';
 import { Button, Dialog, Portal, Text, TextInput } from 'react-native-paper';
 
 interface CustomTextInputDialogProps {
@@ -7,6 +8,7 @@ interface CustomTextInputDialogProps {
     errorMessaage: string;
     dialogTitle?: string;
     textInputLabel?: string;
+    textInputKeyboardType?: KeyboardTypeOptions | undefined;
     autoCapitalize?: "none" | "sentences" | "words" | "characters" | undefined
     onDismiss: () => void;
     onChangeText: (text: string) => void;
@@ -14,7 +16,7 @@ interface CustomTextInputDialogProps {
     onConfirm: () => void;
 }
 
-const CustomTextInputDialog = ({ visible, dialogTitle, textInputLabel, autoCapitalize = 'characters', errorMessaage, value, onChangeText, onCancel, onConfirm, onDismiss }: CustomTextInputDialogProps) => {
+const CustomTextInputDialog = ({ visible, dialogTitle, textInputKeyboardType = 'default', textInputLabel, autoCapitalize = 'characters', errorMessaage, value, onChangeText, onCancel, onConfirm, onDismiss }: CustomTextInputDialogProps) => {
     return (
         <Portal>
             <Dialog
@@ -28,6 +30,7 @@ const CustomTextInputDialog = ({ visible, dialogTitle, textInputLabel, autoCapit
                     <TextInput
                         label={textInputLabel}
                         mode="outlined"
+                        keyboardType={textInputKeyboardType}
                         value={value}
                         onChangeText={onChangeText}
                         autoCapitalize={autoCapitalize}

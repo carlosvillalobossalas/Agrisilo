@@ -156,6 +156,7 @@ const Login = () => {
                     dialogTitle='Recuperar contraseña'
                     textInputLabel='Correo electrónico'
                     value={emailRecovery}
+                    textInputKeyboardType='email-address'
                     onChangeText={(text: string) => {
                         setEmailRecovery(text);
                         setRecoveryError('');
