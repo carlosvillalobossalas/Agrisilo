@@ -4,6 +4,7 @@ import { User } from "../interfaces/auth";
 import { Alert, Linking } from 'react-native';
 
 const auth = getAuth();
+auth.languageCode = 'es';
 const userCollection = firestore().collection('Users')
 const invitesCollection = firestore().collection('Invites')
 
@@ -235,6 +236,7 @@ export const sendInviteEmail = async (email: string, code: string) => {
 
 export const sendPasswordResetEmail = async (email: string) => {
     try {
+
         await auth.sendPasswordResetEmail(email);
         return true
     } catch (error) {
