@@ -23,7 +23,7 @@ const CustomCalendarFAB = () => {
                 open={openFAB}
                 actions={[
                     {
-                        label: 'Agregar tarea',
+                        label: 'Agregar evento',
                         icon: 'calendar-plus',
                         onPress: () => { navigation.navigate('EventScreen') },
                         style: { backgroundColor: theme.colors.primaryContainer }
