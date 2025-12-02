@@ -158,6 +158,8 @@ export const exportTablePDF = async (rows: EventsPDFRow[]) => {
           <tr>
             <th>Tarea</th>
             <th>Cliente</th>
+            <th>Área</th>
+            <th>Ubicación</th>
             <th>Servicio</th>
             <th>Estado</th>
             <th>Fecha de inicio</th>
@@ -169,6 +171,8 @@ export const exportTablePDF = async (rows: EventsPDFRow[]) => {
               <tr>
                 <td>${row.name}</td>
                 <td>${row.client}</td>
+                <td>${row.area}</td>
+                <td>${row.location}</td>
                 <td>${row.service}</td>
                 <td>${row.status}</td>
                 <td>${row.startDate}</td>

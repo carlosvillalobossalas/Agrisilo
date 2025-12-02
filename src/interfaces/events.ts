@@ -20,6 +20,8 @@ export interface EventFilters {
 
 export interface EventsPDFRow {
     client: string
+    area:string
+    location:string
     service: string
     status: string
     startDate: string
