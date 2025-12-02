@@ -1,6 +1,6 @@
 import { Alert, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Button, Dialog, FAB, Portal, Text, TextInput } from 'react-native-paper'
+import { FAB, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import { useDispatch } from 'react-redux'
@@ -14,8 +14,6 @@ const UsersScreen = () => {
     const navigation = useNavigation()
 
     const [filterValue, setFilterValue] = useState('')
-    const [newUserEmail, setNewUserEmail] = useState('')
-    const [inviteModalVisible, setInviteModalVisible] = useState(false);
 
     useEffect(() => {
         const unsubscribe = getAllUsers((data) => {
@@ -24,6 +22,44 @@ const UsersScreen = () => {
         })
         return () => unsubscribe()
     }, [])
+
+    const handleInviteUser = () => {
+        Alert.prompt(
+            'Invitar usuario',
+            'Ingresa el correo electrónico',
+            [
+                {
+                    text: 'Cancelar',
+                    onPress: () => {},
+                    style: 'cancel',
+                },
+                {
+                    text: 'Enviar',
+                    onPress: async (email?: string) => {
+                        if (!email?.trim()) {
+                            Alert.alert('Correo inválido', 'Debes ingresar un correo válido.');
+                            return;
+                        }
+
+                        try {
+                            const code = await createInvite(email.trim());
+                            await sendInviteEmail(email.trim(), code);
+                            Alert.alert(
+                                'Invitación enviada',
+                                `Se envió el código a: ${email.trim()}`
+                            );
+                        } catch (err) {
+                            console.error(err);
+                            Alert.alert('Error', 'No se pudo crear la invitación.');
+                        }
+                    },
+                },
+            ],
+            'plain-text',
+            '',
+            'default'
+        );
+    }
 
     return (
         <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
@@ -74,7 +110,7 @@ const UsersScreen = () => {
                 authState.userFS?.admin && (
                     <FAB
                         icon={'plus'}
-                        onPress={() => setInviteModalVisible(true)}
+                        onPress={handleInviteUser}
                         style={{
                             position: 'absolute',
                             margin: 16,
@@ -83,70 +119,6 @@ const UsersScreen = () => {
                         }} />
                 )
             }
-
-
-            <Portal>
-                <Dialog
-                    visible={inviteModalVisible}
-                    onDismiss={() => setInviteModalVisible(false)}
-                    style={{ backgroundColor: 'white' }}
-                >
-                    <Dialog.Title>Invitar usuario</Dialog.Title>
-
-                    <Dialog.Content>
-                        <TextInput
-                            label="Correo electrónico"
-                            mode="outlined"
-                            keyboardType="email-address"
-                            value={newUserEmail}
-                            onChangeText={setNewUserEmail}
-                            autoCapitalize="none"
-                        />
-                    </Dialog.Content>
-
-                    <Dialog.Actions>
-                        <Button
-                            onPress={() => {
-                                setInviteModalVisible(false);
-                                setNewUserEmail('');
-                            }}
-                        >
-                            Cancelar
-                        </Button>
-
-                        <Button
-                            onPress={async () => {
-                                if (!newUserEmail.trim()) {
-                                    Alert.alert("Correo inválido", "Debes ingresar un correo válido.");
-                                    return;
-                                }
-
-                                try {
-                                    // 1. Crear invitación en Firestore
-                                    const code = await createInvite(newUserEmail.trim());
-
-                                    // 2. Enviar correo con el código
-                                    await sendInviteEmail(newUserEmail.trim(), code);
-
-                                    // 3. Cerrar modal y limpiar
-                                    setInviteModalVisible(false);
-                                    setNewUserEmail('');
-
-                                    Alert.alert(
-                                        "Invitación enviada",
-                                        `Se envió el código a: ${newUserEmail.trim()}`
-                                    );
-                                } catch (err) {
-                                    console.error(err);
-                                    Alert.alert("Error", "No se pudo crear la invitación.");
-                                }
-                            }}
-                        >
-                            Enviar
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Portal>
         </View>
     )
 }
