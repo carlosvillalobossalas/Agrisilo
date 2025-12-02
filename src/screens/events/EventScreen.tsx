@@ -39,13 +39,39 @@ const EventScreen = () => {
 
 
     const handleSubmit = async () => {
-        console.log(eventForm)
-        dispatch(eventLoading(true))
-        await saveEvent(eventForm)
-        dispatch(eventLoading(false))
+        console.log('Guardando evento:', eventForm)
+        
+        // Validar que los campos requeridos estén completos
+        if (!eventForm.name.trim()) {
+            Alert.alert('Validación', 'El nombre del evento es requerido');
+            return;
+        }
+        if (!eventForm.client) {
+            Alert.alert('Validación', 'Debes seleccionar un cliente');
+            return;
+        }
+        if (!eventForm.status) {
+            Alert.alert('Validación', 'Debes seleccionar un estado');
+            return;
+        }
+        if (eventForm.services.length === 0) {
+            Alert.alert('Validación', 'Debes seleccionar al menos un servicio');
+            return;
+        }
 
-        if (!statusState.loading) {
-            navigation.goBack()
+        try {
+            dispatch(eventLoading(true))
+            await saveEvent(eventForm)
+            console.log('Evento guardado exitosamente. Notificaciones será enviadas por Cloud Function.')
+            dispatch(eventLoading(false))
+
+            if (!statusState.loading) {
+                navigation.goBack()
+            }
+        } catch (error) {
+            console.error('Error al guardar evento:', error)
+            dispatch(eventLoading(false))
+            Alert.alert('Error', 'No se pudo guardar el evento. Intenta de nuevo.')
         }
     }
 

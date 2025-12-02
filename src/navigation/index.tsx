@@ -311,24 +311,33 @@ export default function Navigation() {
     const [initializing, setInitializing] = useState(true)
 
     const requestPermissionAndToken = async () => {
-        await messaging().registerDeviceForRemoteMessages();
-        const authStatus = await messaging().requestPermission();
-        console.log("🚀 ~ requestPermissionAndToken ~ authStatus:", authStatus)
-        const enabled =
-            authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-            authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        try {
 
-        if (enabled) {
-            const fcmToken = await messaging().getToken();
-            console.log("TOKEN FCM:", fcmToken);
+            // Segundo: solicitar permiso al usuario
+            const authStatus = await messaging().requestPermission();
+            console.log("🚀 ~ requestPermissionAndToken ~ authStatus:", authStatus)
+            
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-            // Guardarlo en tu colección USERS
-            // para luego enviar notificaciones a todos
-            console.log(user)
-            await saveUserFCMToken(user!.uid, fcmToken);
+            if (enabled) {
+                // Tercero: obtener el FCM token (ya registrado)
+                const fcmToken = await messaging().getToken();
+                console.log("✅ TOKEN FCM obtenido:", fcmToken);
 
-
-
+                // Guardar el token en Firestore
+                if (user?.uid) {
+                    await saveUserFCMToken(user.uid, fcmToken);
+                    console.log("✅ Token guardado en Firestore para usuario:", user.uid);
+                } else {
+                    console.warn("⚠️ Usuario no disponible para guardar token");
+                }
+            } else {
+                console.warn("⚠️ Permiso de notificaciones no otorgado");
+            }
+        } catch (error) {
+            console.error("❌ Error al obtener token FCM:", error);
         }
     };
 

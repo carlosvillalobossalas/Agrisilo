@@ -111,11 +111,28 @@ export const saveUser = async (user: User & { newPassword: string, currentPasswo
 
 export const saveUserFCMToken = async (uid: string, token: string) => {
     try {
+        if (!uid || !token) {
+            console.warn("⚠️ saveUserFCMToken: uid o token vacío", { uid, token });
+            return;
+        }
+        
         await userCollection.doc(uid).update({
             fcmToken: token
         });
-    } catch (error) {
-        console.error(error)
+        console.log("✅ FCM Token guardado exitosamente para usuario:", uid);
+    } catch (error: any) {
+        console.error("❌ Error al guardar FCM Token:", error);
+        // Si el documento no existe, intentar crearlo
+        if (error?.code === 'not-found') {
+            try {
+                await userCollection.doc(uid).set({
+                    fcmToken: token
+                });
+                console.log("✅ Documento de usuario creado con FCM Token");
+            } catch (createError) {
+                console.error("❌ Error al crear documento:", createError);
+            }
+        }
     }
 }
 
