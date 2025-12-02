@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Keyboard, Pressable, View } from 'react-native'
+import { Alert, Image, Keyboard, Pressable, View } from 'react-native'
 import { Button, Text, TextInput, useTheme, } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { sendPasswordResetEmail, signIn, validateInviteCode } from '../../services/auth'
@@ -7,7 +7,6 @@ import { useNavigation } from '@react-navigation/native'
 import { useDispatch } from 'react-redux'
 import { loginFailure, loginStart, loginSuccess, setCodeAndInitialData } from '../../store/slices/authSlice'
 import { useAppSelector } from '../../store'
-import CustomTextInputDialog from '../../components/CustomTextInputDialog'
 
 const Login = () => {
     const { colors, fonts } = useTheme()
@@ -16,12 +15,6 @@ const Login = () => {
     const authState = useAppSelector(state => state.authState)
     const dispatch = useDispatch()
 
-    const [signUpCode, setSignUpCode] = useState('')
-    const [inviteModalVisible, setInviteModalVisible] = useState(false);
-    const [emailRecovery, setEmailRecovery] = useState('')
-    const [recoveryModalVisible, setRecoveryModalVisible] = useState(false);
-    const [recoveryError, setRecoveryError] = useState('')
-    const [inviteError, setInviteError] = useState('');
     const [loginForm, setLoginForm] = useState({
         email: '',
         password: ''
@@ -39,6 +32,79 @@ const Login = () => {
         }
     }
 
+    const handleInviteCode = () => {
+        Alert.prompt(
+            'Crear cuenta',
+            'Ingresa tu código de verificación',
+            [
+                {
+                    text: 'Cancelar',
+                    onPress: () => { },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Validar',
+                    onPress: async (code?: string) => {
+                        if (!code?.trim()) {
+                            Alert.alert('Error', 'Debes ingresar un código.');
+                            return;
+                        }
+
+                        const result = await validateInviteCode(code.trim().toUpperCase());
+
+                        if (!result.valid) {
+                            Alert.alert('Error', result.reason ?? '');
+                            return;
+                        }
+
+                        // Código válido -> navegar
+                        dispatch(setCodeAndInitialData({
+                            code: code.trim().toUpperCase(),
+                            inviteData: result?.data ?? undefined
+                        }))
+                        navigation.navigate('SignUp');
+                    },
+                },
+            ],
+            'plain-text',
+            '',
+            'default'
+        );
+    }
+
+    const handlePasswordRecovery = () => {
+        Alert.prompt(
+            'Recuperar contraseña',
+            'Ingresa tu correo electrónico',
+            [
+                {
+                    text: 'Cancelar',
+                    onPress: () => { },
+                    style: 'cancel',
+                },
+                {
+                    text: 'Enviar',
+                    onPress: async (email?: string) => {
+                        if (!email?.trim()) {
+                            Alert.alert('Error', 'Debes ingresar un correo electrónico.');
+                            return;
+                        }
+
+                        const sent = await sendPasswordResetEmail(email.trim());
+                        if (!sent) {
+                            Alert.alert('Error', 'Ocurrió un error al enviar el correo. Verifica que el correo sea correcto.');
+                        } else {
+                            Alert.alert('Correo enviado', 'Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.');
+                        }
+                    },
+                },
+            ],
+            'plain-text',
+            '',
+            'default'
+        );
+    }
+
     return (
         <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss} accessible={false}>
             <SafeAreaView style={{
@@ -48,7 +114,11 @@ const Login = () => {
                 backgroundColor: colors.background,
                 gap: 20,
             }}>
-                <Text variant='headlineMedium' style={{ fontWeight: 'bold' }}>Agrisilo</Text>
+                <Image
+                    source={require('../../assets/images/1024.png')}
+                    style={{ height: 180, resizeMode: 'contain' }}
+                    accessibilityLabel="Agrisilo logo"
+                />
                 <View style={{ width: '100%', alignItems: 'center', gap: 10 }}>
                     <TextInput
                         left={<TextInput.Icon icon="account-outline" />}
@@ -74,12 +144,12 @@ const Login = () => {
                         secureTextEntry
                     />
                     <View style={{ alignItems: 'flex-end', width: '100%' }}>
-                        <Button style={{ alignSelf: 'flex-end' }} onPress={() => { setRecoveryModalVisible(true) }}>
+                        <Button style={{ alignSelf: 'flex-end' }} onPress={handlePasswordRecovery}>
                             <Text style={{ fontWeight: 'bold', color: colors.primary }} >
                                 ¿Olvidaste tu contraseña?
                             </Text>
                         </Button>
-                        <Button style={{ alignSelf: 'flex-end' }} onPress={() => { setInviteModalVisible(true) }}>
+                        <Button style={{ alignSelf: 'flex-end' }} onPress={handleInviteCode}>
                             <Text style={{ fontWeight: 'bold', color: colors.primary }} >
                                 Crear cuenta
                             </Text>
@@ -96,110 +166,10 @@ const Login = () => {
                             handleLogin()
                         }
                     }}>
-                    <Text style={{ color: colors.onPrimary, fontSize: fonts.titleMedium.fontSize, fontWeight: 'bold' }}>
+                    <Text style={{ color: colors.surface, fontSize: fonts.titleMedium.fontSize, fontWeight: 'bold' }}>
                         Iniciar sesión
                     </Text>
                 </Button>
-
-                <CustomTextInputDialog
-                    visible={inviteModalVisible}
-                    dialogTitle='Validar código'
-                    textInputLabel='Código de verificación'
-                    value={signUpCode}
-                    onChangeText={(text: string) => {
-                        setSignUpCode(text);
-                        setInviteError('');
-                    }}
-                    onDismiss={() => {
-                        setInviteModalVisible(false);
-                        setInviteError('');
-                        setSignUpCode('');
-                    }}
-                    errorMessaage={inviteError}
-                    onConfirm={async () => {
-                        setInviteError('');
-
-                        if (!signUpCode.trim()) {
-                            setInviteError("Debes ingresar un código.");
-                            return;
-                        }
-
-                        const result = await validateInviteCode(
-                            signUpCode.trim().toUpperCase()
-                        );
-
-                        if (!result.valid) {
-                            setInviteError(result.reason ?? '');
-                            return; // No cerrar el modal
-                        }
-
-                        // Código válido -> cerrar modal y navegar
-                        setInviteModalVisible(false);
-                        dispatch(setCodeAndInitialData({
-                            code: signUpCode.trim().toUpperCase(),
-                            inviteData: result?.data ?? undefined
-                        }))
-                        navigation.navigate('SignUp');
-
-                        setSignUpCode('');
-                    }}
-                    onCancel={() => {
-                        setInviteModalVisible(false);
-                        setSignUpCode('');
-                        setInviteError('');
-                    }}
-                />
-
-
-                <CustomTextInputDialog
-                    visible={recoveryModalVisible}
-                    dialogTitle='Recuperar contraseña'
-                    textInputLabel='Correo electrónico'
-                    value={emailRecovery}
-                    textInputKeyboardType='email-address'
-                    onChangeText={(text: string) => {
-                        setEmailRecovery(text);
-                        setRecoveryError('');
-                    }}
-                    onDismiss={() => {
-                        setRecoveryModalVisible(false);
-                        setEmailRecovery('');
-                        setRecoveryError('');
-                    }}
-                    autoCapitalize='none'
-                    errorMessaage={recoveryError}
-                    onConfirm={async () => {
-                        try {
-                            setRecoveryError('');
-
-                            if (!emailRecovery.trim()) {
-                                setRecoveryError("Debes ingresar un correo electrónico.");
-                                return;
-                            }
-
-
-                            const sent = await sendPasswordResetEmail(emailRecovery.trim());
-                            if (!sent) {
-                                setRecoveryError("Ocurrió un error al enviar el correo. Verifica que el correo sea correcto.");
-                                return
-                            } else {
-                                setRecoveryModalVisible(false);
-                                Alert.alert('Correo enviado', 'Se ha enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.');
-                            }
-
-
-                        } catch (error) {
-                            setRecoveryError('Ocurrió un error. Intenta de nuevo más tarde.');
-                            console.error(error);
-                        }
-
-                    }}
-                    onCancel={() => {
-                        setRecoveryModalVisible(false);
-                        setEmailRecovery('');
-                        setRecoveryError('');
-                    }}
-                />
             </SafeAreaView >
         </Pressable>
     )
