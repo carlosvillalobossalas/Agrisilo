@@ -69,5 +69,7 @@
 		<string>Octicons.ttf</string>
 		<string>Zocial.ttf</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>La aplicación necesita acceder a tus fotos para permitir seleccionar y subir imágenes.</string>
 </dict>
 </plist>
