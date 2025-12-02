@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signUp, markInviteAsUsed } from '../../services/auth'; // Ajusta el path si es diferente
+import { signUp, markInviteAsUsed, signIn } from '../../services/auth'; // Ajusta el path si es diferente
+import { loginStart, loginSuccess } from '../../store/slices/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../../store';
 import { clearInviteState } from '../../store/slices/authSlice';
@@ -56,11 +57,17 @@ const SignUpScreen = () => {
       // Marcar invitación como usada
       await markInviteAsUsed(code);
 
+      // Intentar iniciar sesión automáticamente
+      dispatch(loginStart());
+      const signedIn = await signIn(email.trim(), password.trim());
+      if (signedIn && signedIn.user && signedIn.userFS) {
+        dispatch(loginSuccess(signedIn));
+      }
+
       setLoading(false);
 
-      // Navegar al login
+      // Limpiar estado de invitación y dejar que la navegación principal reaccione al login
       dispatch(clearInviteState());
-      navigation.navigate('Login');
 
     } catch (err: any) {
       console.error(err);
