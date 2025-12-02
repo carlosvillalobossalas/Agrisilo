@@ -81,7 +81,7 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                             setOpen={setOpenStatusDropdown}
                             open={openStatusDropdown}
                             items={[
-                                { label: 'Niguno', value: 'none' },
+                                { label: 'Ninguno', value: 'none' },
                                 ...statusState.statuses.map(status => {
                                     return { label: status.name, value: status.id }
                                 }),
