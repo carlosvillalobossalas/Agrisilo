@@ -27,6 +27,13 @@ const CustomBottomSheetPicker = ({ ref, title, items, selectedValue, onPress }: 
                 ref={ref}
                 index={1}
                 snapPoints={['60%', '100%']}
+                onChange={(index)=>{
+                    console.log(index)
+                    if(index === -1){
+                        ref.current?.close()
+                    }
+                }}
+                stackBehavior='replace'
                 enablePanDownToClose={true}
                 backgroundStyle={{
                     backgroundColor: '#fff',
