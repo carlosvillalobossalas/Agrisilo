@@ -27,6 +27,10 @@ const CustomBottomSheetMultiplePicker = ({ ref, title, items, selectedValue, onP
                 ref={ref}
                 index={1}
                 snapPoints={['60%', '100%']}
+                onDismiss={() => {
+                    ref.current?.close()
+                }}
+                stackBehavior='replace'
                 enablePanDownToClose={true}
                 backgroundStyle={{
                     backgroundColor: '#fff',
