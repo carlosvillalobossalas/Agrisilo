@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Alert, TouchableOpacity, View } from 'react-native'
-import { Button, Text, TextInput } from 'react-native-paper'
+import { Button, Text, TextInput, IconButton } from 'react-native-paper'
 import { deleteEvent, saveEvent } from '../../services/events'
 import { eventLoading, setEvent } from '../../store/slices/eventSlice'
 import { IEvent } from '../../interfaces/events'
@@ -116,68 +116,83 @@ const EventScreen = () => {
             </View>
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
-                <CustomInputWithBottomSheet
-                    placeholder='Seleccione un cliente'
-                    value={eventForm.client}
-                    items={clientState.clients.map(client => {
-                        return { label: client.name, value: client.id }
-                    })}
-                    onPress={(value) => {
-                        setEventForm(prev => ({
-                            ...prev,
-                            client: value
-                        }))
-                    }}
-                    icon='account-group-outline'
-                    title='Clientes'
-                    key={'client'}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomInputWithBottomSheet
+                            placeholder='Seleccione un cliente'
+                            value={eventForm.client}
+                            items={clientState.clients.map(client => {
+                                return { label: client.name, value: client.id }
+                            })}
+                            onPress={(value) => {
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    client: value
+                                }))
+                            }}
+                            icon='account-group-outline'
+                            title='Clientes'
+                            key={'client'}
+                        />
+                    </View>
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ClientScreen')} />
+                </View>
             </View>
             <View style={{ gap: 5 }}>
 
                 <Text style={{ fontWeight: 'bold' }}>Servicios</Text>
 
-                <CustomMultipleInputWithBottomSheet
-                    placeholder='Seleccione servicios'
-                    value={eventForm.services}
-                    items={servicesState.services.map(service => {
-                        return { label: service.name, value: service.id }
-                    })}
-                    onPress={(value) => {
-                        const selectedServices = [...eventForm.services]
-                        if (selectedServices.includes(value)) {
-                            selectedServices.splice(selectedServices.indexOf(value), 1)
-                        } else {
-                            selectedServices.push(value)
-                        }
-                        setEventForm(prev => ({
-                            ...prev,
-                            services: selectedServices
-                        }))
-                    }}
-                    icon='account-wrench-outline'
-                    title='Servicios'
-                    key={'service'}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomMultipleInputWithBottomSheet
+                            placeholder='Seleccione servicios'
+                            value={eventForm.services}
+                            items={servicesState.services.map(service => {
+                                return { label: service.name, value: service.id }
+                            })}
+                            onPress={(value) => {
+                                const selectedServices = [...eventForm.services]
+                                if (selectedServices.includes(value)) {
+                                    selectedServices.splice(selectedServices.indexOf(value), 1)
+                                } else {
+                                    selectedServices.push(value)
+                                }
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    services: selectedServices
+                                }))
+                            }}
+                            icon='account-wrench-outline'
+                            title='Servicios'
+                            key={'service'}
+                        />
+                    </View>
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ServiceScreen')} />
+                </View>
             </View>
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Estado</Text>
-                <CustomInputWithBottomSheet
-                    placeholder='Seleccione un estado'
-                    value={eventForm.status}
-                    items={statusState.statuses.map(status => {
-                        return { label: status.name, value: status.id }
-                    })}
-                    onPress={(value) => {
-                        setEventForm(prev => ({
-                            ...prev,
-                            status: value
-                        }))
-                    }}
-                    icon='check'
-                    title='Estados'
-                    key={'status'}
-                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomInputWithBottomSheet
+                            placeholder='Seleccione un estado'
+                            value={eventForm.status}
+                            items={statusState.statuses.map(status => {
+                                return { label: status.name, value: status.id }
+                            })}
+                            onPress={(value) => {
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    status: value
+                                }))
+                            }}
+                            icon='check'
+                            title='Estados'
+                            key={'status'}
+                        />
+                    </View>
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('StatusScreen')} />
+                </View>
 
             </View>
             <TextInput
