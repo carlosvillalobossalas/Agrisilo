@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { useState } from 'react'
 import CustomMultipleInputWithBottomSheet from '../../components/CustomMultipleInputWithBottomSheet'
 import { useAppSelector } from '../../store'
@@ -18,12 +18,6 @@ interface EventForm {
     endDate: string
 
 }
-
-const rows = [
-    { col1: "Juan", col2: "Cliente A", col3: "Activo" },
-    { col1: "María", col2: "Cliente B", col3: "Pendiente" },
-    { col1: "Pedro", col2: "Cliente C", col3: "Completado" },
-];
 
 const EventToPdfScreen = () => {
 
@@ -49,15 +43,37 @@ const EventToPdfScreen = () => {
     })
 
     const handleSubmit = async () => {
+        // If user didn't open/select filters, treat empty arrays as "all"
+        const clientsToFilter = eventForm.clients && eventForm.clients.length > 0
+            ? eventForm.clients
+            : clientState.clients.map(c => c.id);
 
-        console.log(eventForm)
+        const servicesToFilter = eventForm.services && eventForm.services.length > 0
+            ? eventForm.services
+            : servicesState.services.map(s => s.id);
 
-        const events = await getFilteredEvents(eventForm)
+        const statusesToFilter = eventForm.statuses && eventForm.statuses.length > 0
+            ? eventForm.statuses
+            : statusState.statuses.map(s => s.id);
+
+        const normalizedForm: EventForm = {
+            ...eventForm,
+            clients: clientsToFilter,
+            services: servicesToFilter,
+            statuses: statusesToFilter,
+        }
+
+        console.log('Normalized filter form:', normalizedForm)
+
+        const events = await getFilteredEvents(normalizedForm)
         console.log(events)
 
         const eventsMapped = events.map(ev => {
+            const client = clientState.clients.find(client => client.id === ev.client)
             return {
-                client: clientState.clients.find(client => client.id === ev.client)?.name || 'Desconocido',
+                client: client?.name || 'Desconocido',
+                area: client?.area.toString() || 'Desconocido',
+                location: client?.location || 'Desconocido',
                 service: ev.services.map(srvId => servicesState.services.find(srv => srv.id === srvId)?.name || 'Desconocido').join(', '),
                 status: statusState.statuses.find(status => status.id === ev.status)?.name || 'Desconocido',
                 startDate: dayjs(ev.startDate).format('DD/MM/YYYY HH:mm'),
@@ -65,6 +81,12 @@ const EventToPdfScreen = () => {
                 name: ev.name
             }
         })
+
+        // Si no hay eventos, mostrar alerta y permanecer en la vista actual
+        if (!eventsMapped || eventsMapped.length === 0) {
+            Alert.alert('Sin eventos', 'No hay eventos para exportar en el rango y filtros seleccionados.');
+            return;
+        }
 
         const file = await exportTablePDF(eventsMapped)
         dispatch(setPDFPath(file))
