@@ -187,6 +187,24 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             </View>
 
                         </View>
+                        <View
+                            style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 10 }}>
+                            <Icon source={'terrain'} size={32} />
+                            <View>
+                                <Text style={{ fontWeight: '200', fontSize: 16 }}>Area (hectáreas)</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{event?.client.area}</Text>
+                            </View>
+
+                        </View>
+                        <View
+                            style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 10 }}>
+                            <Icon source={'map-marker-outline'} size={32} />
+                            <View>
+                                <Text style={{ fontWeight: '200', fontSize: 16 }}>Ubicación del terreno</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{event?.client.location}</Text>
+                            </View>
+
+                        </View>
 
                         <Divider style={{ marginTop: 25 }} />
 
