@@ -1,5 +1,6 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { TextInput } from 'react-native-paper'
+import { Keyboard, DeviceEventEmitter } from 'react-native'
 import CustomBottomSheetPicker from './CustomBottomSheetPicker'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
@@ -16,6 +17,15 @@ const CustomInputWithBottomSheet = ({ value, items, title, icon, placeholder, on
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
+    useEffect(() => {
+        const sub = DeviceEventEmitter.addListener('dismissSheets', () => {
+            bottomSheetRef.current?.dismiss()
+        })
+        return () => {
+            sub.remove()
+        }
+    }, [])
+
     return (
         <>
             <TextInput
@@ -23,8 +33,8 @@ const CustomInputWithBottomSheet = ({ value, items, title, icon, placeholder, on
                 value={items.find(item => item.value === value)?.label ?? placeholder}
                 mode='outlined'
                 editable={false}
-                right={<TextInput.Icon icon={icon} onPress={() => { bottomSheetRef.current?.present() }} />}
-                onPressIn={() => { bottomSheetRef.current?.present() }}
+                right={<TextInput.Icon icon={icon} onPress={() => { Keyboard.dismiss(); bottomSheetRef.current?.present() }} />}
+                onPressIn={() => { Keyboard.dismiss(); bottomSheetRef.current?.present() }}
             />
             <CustomBottomSheetPicker
                 ref={bottomSheetRef}

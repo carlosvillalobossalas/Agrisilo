@@ -15,9 +15,10 @@ interface CustomBottomSheetMultiplePicker {
     items: Item[],
     selectedValue: string[],
     onPress: (value: string) => void,
+    onDismiss?: () => void,
 }
 
-const CustomBottomSheetMultiplePicker = ({ ref, title, items, selectedValue, onPress }: CustomBottomSheetMultiplePicker) => {
+const CustomBottomSheetMultiplePicker = ({ ref, title, items, selectedValue, onPress, onDismiss }: CustomBottomSheetMultiplePicker) => {
 
     const insets = useSafeAreaInsets();
 
@@ -28,7 +29,7 @@ const CustomBottomSheetMultiplePicker = ({ ref, title, items, selectedValue, onP
                 index={1}
                 snapPoints={['60%', '100%']}
                 onDismiss={() => {
-                    ref.current?.close()
+                    if (typeof onDismiss === 'function') onDismiss()
                 }}
                 stackBehavior='replace'
                 enablePanDownToClose={true}

@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { Alert, TouchableOpacity, View } from 'react-native'
+import { Alert, TouchableOpacity, View, DeviceEventEmitter } from 'react-native'
 import { Button, Text, TextInput, IconButton } from 'react-native-paper'
 import { deleteEvent, saveEvent } from '../../services/events'
 import { eventLoading, setEvent } from '../../store/slices/eventSlice'
@@ -138,6 +138,7 @@ const EventScreen = () => {
                     placeholder='Ingrese el nombre del evento'
                     mode='outlined'
                     right={<TextInput.Icon icon={'account-outline'} />}
+                    onFocus={() => { DeviceEventEmitter.emit('dismissSheets'); setModalsForm({ startDate: false, endDate: false }) }}
                 />
             </View>
             <View style={{ gap: 5 }}>
