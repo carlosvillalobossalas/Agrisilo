@@ -4,6 +4,7 @@ import { IEvent } from "../../interfaces/events";
 interface EventState {
     events: IEvent[]
     event: IEvent | null
+    onNotification: boolean
     loading: boolean
     error: string | null
     config: {
@@ -18,6 +19,7 @@ interface EventState {
 const initialState: EventState = {
     events: [],
     event: null,
+    onNotification: false,
     loading: false,
     error: null,
     pdfPath: undefined,
@@ -62,10 +64,31 @@ const eventSlice = createSlice({
         },
         setPDFPath: (state, action) => {
             state.pdfPath = action.payload
+        },
+        setOnOpenNotification: (state, action) => {
+            state.onNotification = true
+            state.event = action.payload
+        },
+        setOnCloseNotification: (state) => {
+            state.onNotification = false
+            state.event = null
         }
+
     }
 })
 
 
-export const { setAllEvents, eventLoading, setEvent, setColorBy, setStatusFilter, setClientFilter, setServiceFilter, setEventByCalendarEvent, setPDFPath } = eventSlice.actions
+export const {
+    setAllEvents,
+    eventLoading,
+    setEvent,
+    setColorBy,
+    setStatusFilter,
+    setClientFilter,
+    setServiceFilter,
+    setEventByCalendarEvent,
+    setPDFPath,
+    setOnOpenNotification,
+    setOnCloseNotification
+} = eventSlice.actions
 export default eventSlice.reducer

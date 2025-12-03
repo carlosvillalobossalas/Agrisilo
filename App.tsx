@@ -11,6 +11,9 @@ import dayjs from 'dayjs';
 import messaging from '@react-native-firebase/messaging';
 import Navigation from './src/navigation';
 import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux';
+import { setOnOpenNotification } from './src/store/slices/eventSlice';
+import { getEventById } from './src/services/events';
 
 dayjs.locale('es');
 
@@ -19,27 +22,50 @@ const theme = {
   colors: customColors.colors,
 }
 
-
-const App = () => {
+// Componente interno que usa hooks de Redux y Navegación
+const AppContent = () => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+
+    // Manejar notificaciones en foreground
+    const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
       Alert.alert(
         remoteMessage.notification?.title ?? 'Notificación',
         remoteMessage.notification?.body
       );
     });
 
-    return unsubscribe;
-  }, []);
+    // Manejar tap en notificación (cuando la app está en background)
+    const unsubscribeNotificationOpen = messaging().onNotificationOpenedApp(async remoteMessage => {
+      console.log('🔔 EventId:', remoteMessage.data?.eventId);
 
+      if (remoteMessage.data?.eventId) {
+        const eventId = remoteMessage.data.eventId.toString();
+        const event = await getEventById(eventId);
+        dispatch(setOnOpenNotification(event));
+      } else {
+        console.warn('⚠️ No se encontró eventId en remoteMessage.data');
+      }
+    });
+
+    return () => {
+      unsubscribeForeground();
+      unsubscribeNotificationOpen();
+    };
+  }, [dispatch]);
+
+  return <Navigation />;
+};
+
+const App = () => {
   return (
 
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <Provider store={store}>
           <PaperProvider theme={theme}>
-            <Navigation />
+            <AppContent />
           </PaperProvider>
         </Provider>
       </BottomSheetModalProvider>

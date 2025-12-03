@@ -11,7 +11,7 @@ import CustomBottomEventDetails from '../../components/CustomBottomEventDetails'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 import dayjs from 'dayjs'
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const today = new Date()
 
@@ -31,6 +31,13 @@ const CalendarScreen = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const eventBottomSheetRef = useRef<BottomSheetModal>(null);
+
+  // Abrir bottom sheet si hay un evento seleccionado (por notificación)
+  useEffect(() => {
+    if (eventState.event && eventState.onNotification) {
+      eventBottomSheetRef.current?.present();
+    }
+  }, [eventState.event, eventState.onNotification]);
 
 
 

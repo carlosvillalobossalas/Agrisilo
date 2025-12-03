@@ -11,7 +11,7 @@ import { Client } from '../interfaces/client';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { eventLoading, setEvent } from '../store/slices/eventSlice';
+import { eventLoading, setEvent, setOnCloseNotification } from '../store/slices/eventSlice';
 import { deleteEvent } from '../services/events';
 
 
@@ -123,7 +123,10 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                 ref={ref}
                 index={1}
                 snapPoints={['100%']}
-                onDismiss={()=>{
+                onDismiss={() => {
+                    if (eventState.onNotification) {
+                        dispatch(setOnCloseNotification())
+                    }
                     dispatch(setEvent(null))
                 }}
                 enablePanDownToClose={true}
