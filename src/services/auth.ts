@@ -119,7 +119,6 @@ export const saveUserFCMToken = async (uid: string, token: string) => {
         await userCollection.doc(uid).update({
             fcmToken: token
         });
-        console.log("✅ FCM Token guardado exitosamente para usuario:", uid);
     } catch (error: any) {
         console.error("❌ Error al guardar FCM Token:", error);
         // Si el documento no existe, intentar crearlo
@@ -128,7 +127,6 @@ export const saveUserFCMToken = async (uid: string, token: string) => {
                 await userCollection.doc(uid).set({
                     fcmToken: token
                 });
-                console.log("✅ Documento de usuario creado con FCM Token");
             } catch (createError) {
                 console.error("❌ Error al crear documento:", createError);
             }
