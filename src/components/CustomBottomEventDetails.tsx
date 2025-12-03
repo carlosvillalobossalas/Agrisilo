@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Alert } from 'react-native'
 import { Button, Chip, Divider, Icon, IconButton, Portal, Text } from 'react-native-paper'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +11,7 @@ import { Client } from '../interfaces/client';
 import dayjs from 'dayjs';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { eventLoading } from '../store/slices/eventSlice';
+import { eventLoading, setEvent } from '../store/slices/eventSlice';
 import { deleteEvent } from '../services/events';
 
 
@@ -58,36 +59,60 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
     const navigation = useNavigation()
 
 
-    const [event, setEvent] = useState<Event | null>(null)
+    const [eventDetails, setEventDetails] = useState<Event | null>(null)
 
     const insets = useSafeAreaInsets();
 
     const handleDeleteEvent = async () => {
-        try {
-            dispatch(eventLoading(false))
-            await deleteEvent(event!.id)
-            dispatch(eventLoading(true))
-            setEvent(null)
-            ref.current?.close()
-
-        } catch (error) {
-            console.error(error)
-        }
+        Alert.alert(
+            'Eliminar tarea',
+            `¿Estás seguro de que deseas eliminar "${eventDetails?.name}"?`,
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Eliminar',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            dispatch(eventLoading(true))
+                            await deleteEvent(eventDetails!.id)
+                            dispatch(eventLoading(false))
+                            setEventDetails(null)
+                            ref.current?.close()
+                        } catch (error) {
+                            console.error(error)
+                            dispatch(eventLoading(false))
+                        }
+                    }
+                }
+            ]
+        )
     }
 
     useEffect(() => {
         if (eventState.event === null) return
-        const details: Event = {
-            ...eventState.event,
-            services: serviceState.services.filter(service => eventState.event!.services.includes(service.id)),
-            status: statusState.statuses.find(status => status.id === eventState.event!.status)!,
-            client: clientState.clients.find(client => client.id === eventState.event!.client)!
+        const ev = eventState.event!
 
+        const detailsServices: Service[] = (ev.services || []).map(sid => {
+            const found = serviceState.services.find(service => service.id === sid)
+            return found ?? { id: sid, name: 'Servicio eliminado', color: '#cccccc' }
+        })
+
+        const detailsStatus: Status = statusState.statuses.find(status => status.id === ev.status) ?? { id: ev.status || '', name: 'Estado eliminado', color: '#cccccc' }
+
+        const detailsClient: Client = clientState.clients.find(client => client.id === ev.client) ?? { id: ev.client || '', name: 'Cliente eliminado', email: '', area: 0, location: '', phone: 0, color: '#cccccc' }
+
+        const details: Event = {
+            ...ev,
+            services: detailsServices,
+            status: detailsStatus,
+            client: detailsClient
         }
-        setEvent(details)
+
+        setEventDetails(details)
 
         return () => {
-            setEvent(null)
+            setEventDetails(null)
         }
     }, [eventState.event])
 
@@ -98,6 +123,9 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                 ref={ref}
                 index={1}
                 snapPoints={['100%']}
+                onDismiss={()=>{
+                    dispatch(setEvent(null))
+                }}
                 enablePanDownToClose={true}
                 backgroundStyle={{
                     backgroundColor: '#f6f5f5ff',
@@ -152,18 +180,18 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                         shadowRadius: 6,
 
                     }}>
-                        <Text style={{ fontSize: 32, fontWeight: 'bold' }}>{event?.name}</Text>
+                        <Text style={{ fontSize: 32, fontWeight: 'bold' }}>{eventDetails?.name}</Text>
                         <View style={{ alignItems: 'flex-start', marginTop: 10 }}>
-                            <Chip style={{ backgroundColor: event?.status.color, }} >
-                                <Text style={{ color: getContrastingTextColor(event?.status.color!), fontWeight: 'bold' }}>
-                                    {event?.status.name}
+                            <Chip style={{ backgroundColor: eventDetails?.status?.color ?? '#cccccc', }} >
+                                <Text style={{ color: getContrastingTextColor(eventDetails?.status?.color ?? '#cccccc'), fontWeight: 'bold' }}>
+                                    {eventDetails?.status?.name}
                                 </Text>
                             </Chip>
                         </View>
 
                         <View style={{ marginTop: 30, gap: 5 }}>
                             {
-                                event?.services.map((service) => (
+                                eventDetails?.services.map((service) => (
                                     <View
                                         key={service.id}
                                         style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
@@ -183,7 +211,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'account-group-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Cliente</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{event?.client.name}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.client.name}</Text>
                             </View>
 
                         </View>
@@ -192,7 +220,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'terrain'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Area (hectáreas)</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{event?.client.area}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.client.area}</Text>
                             </View>
 
                         </View>
@@ -201,7 +229,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'map-marker-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Ubicación del terreno</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{event?.client.location}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.client.location}</Text>
                             </View>
 
                         </View>
@@ -213,7 +241,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'calendar-badge-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Fecha de inicio</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(event?.startDate).format("HH:mm DD/MM/YYYY")}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.startDate).format("HH:mm DD/MM/YYYY")}</Text>
                             </View>
 
                         </View>
@@ -223,7 +251,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'calendar-check-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Fecha de fin</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(event?.endDate).format("HH:mm DD/MM/YYYY")}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.endDate).format("HH:mm DD/MM/YYYY")}</Text>
                             </View>
 
                         </View>
