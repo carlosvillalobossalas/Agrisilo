@@ -50,7 +50,6 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
     // 🔵 TRAEMOS LOS DOCUMENTOS
     // ---------------------------
     const snapshot = await query.get();
-    console.log("🚀 ~ getFilteredEvents ~ snapshot:", snapshot)
 
     // ---------------------------
     // 🔵 MAPEO INICIAL
@@ -67,7 +66,6 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
             endDate: raw.endDate.toDate().toISOString(),
         };
     });
-    console.log("🚀 ~ getFilteredEvents ~ data:", data)
 
     // ---------------------------
     // 🔵 FILTRO POR CLIENTES
@@ -75,7 +73,6 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
     if (clients.length > 0) {
         data = data.filter(ev => clients.includes(ev.client));
     }
-    console.log("🚀 ~ getFilteredEvents ~ data:", data)
 
     // ---------------------------
     // 🔵 FILTRO POR SERVICIOS
@@ -85,7 +82,6 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
             ev.services.some(srv => services.includes(srv))
         );
     }
-    console.log("🚀 ~ getFilteredEvents ~ data:", data)
 
     // ---------------------------
     // 🔵 FILTRO POR RANGO DE FECHAS
@@ -97,7 +93,6 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
         const eventStart = new Date(ev.startDate).getTime();
         return eventStart >= start && eventStart <= end;
     });
-    console.log("🚀 ~ getFilteredEvents ~ data:", data)
 
     return data;
 };
