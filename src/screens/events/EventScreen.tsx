@@ -58,6 +58,10 @@ const EventScreen = () => {
             Alert.alert('Validación', 'Debes seleccionar al menos un servicio');
             return;
         }
+        if (new Date(eventForm.endDate) <= new Date(eventForm.startDate)) {
+            Alert.alert('Validación', 'La fecha de fin debe ser posterior a la fecha de inicio');
+            return;
+        }
 
         try {
             dispatch(eventLoading(true))
