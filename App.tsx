@@ -32,7 +32,19 @@ const AppContent = () => {
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
       Alert.alert(
         remoteMessage.notification?.title ?? 'Notificación',
-        remoteMessage.notification?.body
+        remoteMessage.notification?.body,
+        [
+          { text: 'Cerrar', style: 'cancel' },
+          {
+            text: 'Ver', onPress: async () => {
+              if (remoteMessage.data?.eventId) {
+                const eventId = remoteMessage.data.eventId.toString();
+                const event = await getEventById(eventId);
+                dispatch(setOnOpenNotification(event));
+              }
+            }
+          }
+        ]
       );
     });
 
