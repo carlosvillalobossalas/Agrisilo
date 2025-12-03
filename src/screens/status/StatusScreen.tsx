@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Alert, Pressable, Keyboard } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
@@ -85,7 +85,8 @@ const StatusScreen = () => {
 
 
     return (
-        <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+            <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
 
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
@@ -112,7 +113,8 @@ const StatusScreen = () => {
             <Button style={{ marginTop: 'auto', paddingVertical: 5 }} mode='contained' onPress={handleSubmit} loading={statusState.loading}>
                 <Text style={{ fontWeight: 'bold', color: 'white' }}>Guardar estado</Text>
             </Button>
-        </View>
+            </View>
+        </Pressable>
     )
 }
 

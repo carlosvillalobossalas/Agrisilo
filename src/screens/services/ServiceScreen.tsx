@@ -1,4 +1,4 @@
-import { Alert, TouchableOpacity, View } from 'react-native'
+import { Alert, TouchableOpacity, View, Pressable, Keyboard } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Button, Text, TextInput } from 'react-native-paper'
 import CustomColorPicker from '../../components/CustomColorPicker'
@@ -83,7 +83,8 @@ const ServiceScreen = () => {
 
 
     return (
-        <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+            <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 10 }}>
 
             <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
@@ -111,7 +112,8 @@ const ServiceScreen = () => {
             <Button style={{ marginTop: 'auto', paddingVertical: 5 }} mode='contained' onPress={handleSubmit} loading={serviceState.loading}>
                 <Text style={{ fontWeight: 'bold', color: 'white' }}>Guardar servicio</Text>
             </Button>
-        </View>
+            </View>
+        </Pressable>
     )
 }
 
