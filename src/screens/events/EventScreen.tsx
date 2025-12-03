@@ -54,10 +54,14 @@ const EventScreen = () => {
             Alert.alert('Validación', 'Debes seleccionar un estado');
             return;
         }
-        if (eventForm.services.length === 0) {
-            Alert.alert('Validación', 'Debes seleccionar al menos un servicio');
-            return;
-        }
+        // Sanear referencias: eliminar servicios inexistentes; si client/status no existen, limpiarlos
+        const validServices = (eventForm.services || []).filter(sid => servicesState.services.some(s => s.id === sid))
+
+        const clientExists = clientState.clients.some(c => c.id === eventForm.client)
+        const sanitizedClient = clientExists ? eventForm.client : ''
+
+        const statusExists = statusState.statuses.some(s => s.id === eventForm.status)
+        const sanitizedStatus = statusExists ? eventForm.status : ''
         if (new Date(eventForm.endDate) <= new Date(eventForm.startDate)) {
             Alert.alert('Validación', 'La fecha de fin debe ser posterior a la fecha de inicio');
             return;
@@ -65,7 +69,8 @@ const EventScreen = () => {
 
         try {
             dispatch(eventLoading(true))
-            await saveEvent(eventForm)
+            const payload: IEvent = { ...eventForm, services: validServices, client: sanitizedClient, status: sanitizedStatus }
+            await saveEvent(payload)
             console.log('Evento guardado exitosamente. Notificaciones será enviadas por Cloud Function.')
             dispatch(eventLoading(false))
 
