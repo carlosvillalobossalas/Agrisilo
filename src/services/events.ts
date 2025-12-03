@@ -126,6 +126,27 @@ export const deleteEvent = async (id: string) => {
     }
 }
 
+export const getEventById = async (id: string): Promise<IEvent | null> => {
+    try {
+        if (!id) return null;
+        const doc = await eventCollection.doc(id).get();
+        if (!doc.exists) return null;
+        const raw = doc.data() as any;
+        return {
+            id: doc.id,
+            name: raw.name,
+            services: raw.services ?? [],
+            status: raw.status ?? '',
+            client: raw.client ?? '',
+            startDate: raw.startDate?.toDate?.() ? raw.startDate.toDate().toISOString() : new Date(raw.startDate).toISOString(),
+            endDate: raw.endDate?.toDate?.() ? raw.endDate.toDate().toISOString() : new Date(raw.endDate).toISOString(),
+        };
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
 export const exportTablePDF = async (rows: EventsPDFRow[]) => {
     const html = `
     <html>
