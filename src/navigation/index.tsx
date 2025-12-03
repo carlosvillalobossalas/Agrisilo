@@ -323,19 +323,16 @@ export default function Navigation() {
                 // Eliminar token anterior para forzar uno nuevo (evita tokens inválidos por cambios en APNs)
                 try {
                     await messaging().deleteToken();
-                    console.log('🔄 Token anterior eliminado, solicitando uno nuevo...');
                 } catch (delErr) {
                     console.warn('⚠️ No se pudo eliminar token anterior:', delErr);
                 }
 
                 // Obtener el FCM token nuevo
                 const fcmToken = await messaging().getToken();
-                console.log("✅ TOKEN FCM obtenido:", fcmToken);
 
                 // Guardar el token en Firestore
                 if (user?.uid) {
                     await saveUserFCMToken(user.uid, fcmToken);
-                    console.log("✅ Token guardado para usuario:", user.uid);
                 } else {
                     console.warn("⚠️ Usuario no disponible para guardar token");
                 }
@@ -351,7 +348,6 @@ export default function Navigation() {
     useEffect(() => {
         const unsubscribe = messaging().onTokenRefresh(async (fcmToken) => {
             try {
-                console.log('🔁 FCM token refrescado:', fcmToken);
                 if (user?.uid) {
                     await saveUserFCMToken(user.uid, fcmToken);
                 }
