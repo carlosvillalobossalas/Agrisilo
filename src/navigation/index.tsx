@@ -313,9 +313,7 @@ export default function Navigation() {
     const requestPermissionAndToken = async () => {
         try {
 
-            // Segundo: solicitar permiso al usuario
             const authStatus = await messaging().requestPermission();
-            console.log("🚀 ~ requestPermissionAndToken ~ authStatus:", authStatus)
             
             const enabled =
                 authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -324,12 +322,10 @@ export default function Navigation() {
             if (enabled) {
                 // Tercero: obtener el FCM token (ya registrado)
                 const fcmToken = await messaging().getToken();
-                console.log("✅ TOKEN FCM obtenido:", fcmToken);
 
                 // Guardar el token en Firestore
                 if (user?.uid) {
                     await saveUserFCMToken(user.uid, fcmToken);
-                    console.log("✅ Token guardado en Firestore para usuario:", user.uid);
                 } else {
                     console.warn("⚠️ Usuario no disponible para guardar token");
                 }
@@ -340,6 +336,22 @@ export default function Navigation() {
             console.error("❌ Error al obtener token FCM:", error);
         }
     };
+
+    // Mantener el token actualizado
+    useEffect(() => {
+        const unsubscribe = messaging().onTokenRefresh(async (fcmToken) => {
+            try {
+                console.log('🔁 FCM token refrescado:', fcmToken);
+                if (user?.uid) {
+                    await saveUserFCMToken(user.uid, fcmToken);
+                }
+            } catch (e) {
+                console.error('Error guardando token refrescado:', e);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [user]);
 
     useEffect(() => {
         if (user)

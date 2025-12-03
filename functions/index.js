@@ -15,16 +15,24 @@ exports.notifyOnEventCreated = onDocumentCreated("Events/{eventId}", async (even
   logger.info("New event created:", { eventId: event.params.eventId, eventName: eventData.name });
 
   try {
+    logger.info("Getting users with FCM tokens...");
+    
     // Obtener tokens de usuarios
     const usersSnap = await admin.firestore().collection("Users").get();
-    const tokens = usersSnap.docs
-      .map((doc) => doc.data().fcmToken)
-      .filter((t) => t);
+    const allTokenData = usersSnap.docs.map((doc) => ({
+      userId: doc.id,
+      token: doc.data().fcmToken
+    }));
 
-    logger.info(`Found ${tokens.length} users with FCM tokens`);
+    // Filtrar tokens válidos
+    const validTokens = allTokenData.filter(
+      (t) => t.token && typeof t.token === 'string' && t.token.trim().length > 100
+    );
 
-    if (tokens.length === 0) {
-      logger.warn("No FCM tokens found for any user");
+    logger.info(`Found ${allTokenData.length} users total, ${validTokens.length} with valid FCM tokens`);
+
+    if (validTokens.length === 0) {
+      logger.warn("No valid FCM tokens found for any user");
       return;
     }
 
@@ -33,16 +41,44 @@ exports.notifyOnEventCreated = onDocumentCreated("Events/{eventId}", async (even
         title: "Nuevo evento creado",
         body: `Se creó el evento: ${eventData.name}`
       },
-      tokens,
+      data: {
+        eventId: event.params.eventId,
+        type: 'new_event',
+        eventName: eventData.name
+      }
     };
 
-    const response = await admin.messaging().sendMulticast(message);
-    logger.info("Notifications sent:", {
-      successCount: response.successCount,
-      failureCount: response.failureCount
+    // Enviar a cada token individualmente para mejor diagnóstico
+    logger.info(`Attempting to send notifications to ${validTokens.length} tokens...`);
+    const results = [];
+    
+    for (const tokenData of validTokens) {
+      try {
+        const result = await admin.messaging().send({
+          ...message,
+          token: tokenData.token
+        });
+        logger.info(`✅ Sent to ${tokenData.userId}:`, { messageId: result });
+        results.push({ userId: tokenData.userId, success: true, messageId: result });
+      } catch (error) {
+        logger.warn(`❌ Failed to send to ${tokenData.userId}:`, { 
+          token: tokenData.token.substring(0, 20) + '...', 
+          error: error.code 
+        });
+        results.push({ userId: tokenData.userId, success: false, error: error.code });
+      }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    const failureCount = results.filter(r => !r.success).length;
+    
+    logger.info("Notification sending completed:", {
+      successCount,
+      failureCount,
+      total: validTokens.length
     });
 
-    return response;
+    return { successCount, failureCount, results };
   } catch (error) {
     logger.error("Error sending notifications:", error);
     throw error;
