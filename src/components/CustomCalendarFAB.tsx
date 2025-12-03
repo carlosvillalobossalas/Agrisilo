@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { FAB, Portal, useTheme } from 'react-native-paper'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
+import { useDispatch } from 'react-redux'
+import { setEvent } from '../store/slices/eventSlice'
 
 const CustomCalendarFAB = () => {
 
@@ -8,6 +10,7 @@ const CustomCalendarFAB = () => {
 
     const navigation = useNavigation()
     const isFocused = useIsFocused()
+    const dispatch = useDispatch()
 
     const [openFAB, setOpenFAB] = useState(false)
     const onFABStateChange = ({ open }: any) => setOpenFAB(open);
@@ -25,7 +28,10 @@ const CustomCalendarFAB = () => {
                     {
                         label: 'Agregar evento',
                         icon: 'calendar-plus',
-                        onPress: () => { navigation.navigate('EventScreen') },
+                        onPress: () => {
+                            dispatch(setEvent(null))
+                            navigation.navigate('EventScreen')
+                        },
                         style: { backgroundColor: theme.colors.primaryContainer }
                     },
                     {
