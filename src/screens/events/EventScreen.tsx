@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { Alert, TouchableOpacity, View, DeviceEventEmitter } from 'react-native'
+import { Alert, TouchableOpacity, View, DeviceEventEmitter, Pressable, Keyboard } from 'react-native'
 import { Button, Text, TextInput, IconButton } from 'react-native-paper'
 import { deleteEvent, saveEvent } from '../../services/events'
 import { eventLoading, setEvent } from '../../store/slices/eventSlice'
@@ -40,7 +40,7 @@ const EventScreen = () => {
 
     const handleSubmit = async () => {
         console.log('Guardando evento:', eventForm)
-        
+
         // Validar que los campos requeridos estén completos
         if (!eventForm.name.trim()) {
             Alert.alert('Validación', 'El nombre del evento es requerido');
@@ -138,170 +138,173 @@ const EventScreen = () => {
 
 
     return (
-        <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 15 }}>
-            <View style={{ gap: 5 }}>
-                <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
+        <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
+            <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 15 }}>
+                <View style={{ gap: 5 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
+                    <TextInput
+                        value={eventForm.name}
+                        onChangeText={(text) => setEventForm({ ...eventForm, name: text })}
+                        placeholder='Ingrese el nombre del evento'
+                        mode='outlined'
+
+                        right={<TextInput.Icon icon={'account-outline'} />}
+                        onFocus={() => { DeviceEventEmitter.emit('dismissSheets'); setModalsForm({ startDate: false, endDate: false }) }}
+                    />
+                </View>
+                <View style={{ gap: 5 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ flex: 1 }}>
+                            <CustomInputWithBottomSheet
+                                placeholder='Seleccione un cliente'
+                                value={eventForm.client}
+                                items={clientState.clients.map(client => {
+                                    return { label: client.name, value: client.id }
+                                })}
+                                onPress={(value) => {
+                                    setEventForm(prev => ({
+                                        ...prev,
+                                        client: value
+                                    }))
+                                }}
+                                icon='account-group-outline'
+                                title='Clientes'
+                                key={'client'}
+                            />
+                        </View>
+                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ClientScreen')} />
+                    </View>
+                </View>
+                <View style={{ gap: 5 }}>
+
+                    <Text style={{ fontWeight: 'bold' }}>Servicios</Text>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ flex: 1 }}>
+                            <CustomMultipleInputWithBottomSheet
+                                placeholder='Seleccione servicios'
+                                value={eventForm.services}
+                                items={servicesState.services.map(service => {
+                                    return { label: service.name, value: service.id }
+                                })}
+                                onPress={(value) => {
+                                    const selectedServices = [...eventForm.services]
+                                    if (selectedServices.includes(value)) {
+                                        selectedServices.splice(selectedServices.indexOf(value), 1)
+                                    } else {
+                                        selectedServices.push(value)
+                                    }
+                                    setEventForm(prev => ({
+                                        ...prev,
+                                        services: selectedServices
+                                    }))
+                                }}
+                                icon='account-wrench-outline'
+                                title='Servicios'
+                                key={'service'}
+                            />
+                        </View>
+                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ServiceScreen')} />
+                    </View>
+                </View>
+                <View style={{ gap: 5 }}>
+                    <Text style={{ fontWeight: 'bold' }}>Estado</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <View style={{ flex: 1 }}>
+                            <CustomInputWithBottomSheet
+                                placeholder='Seleccione un estado'
+                                value={eventForm.status}
+                                items={statusState.statuses.map(status => {
+                                    return { label: status.name, value: status.id }
+                                })}
+                                onPress={(value) => {
+                                    setEventForm(prev => ({
+                                        ...prev,
+                                        status: value
+                                    }))
+                                }}
+                                icon='check'
+                                title='Estados'
+                                key={'status'}
+                            />
+                        </View>
+                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('StatusScreen')} />
+                    </View>
+
+                </View>
                 <TextInput
-                    value={eventForm.name}
-                    onChangeText={(text) => setEventForm({ ...eventForm, name: text })}
-                    placeholder='Ingrese el nombre del evento'
+                    label='Fecha de inicio'
+                    value={dayjs(eventForm.startDate).format('DD/MM/YYYY HH:mm')}
                     mode='outlined'
-                    right={<TextInput.Icon icon={'account-outline'} />}
-                    onFocus={() => { DeviceEventEmitter.emit('dismissSheets'); setModalsForm({ startDate: false, endDate: false }) }}
+                    editable={false}
+                    right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: true, endDate: false })} />}
+                    onPressIn={() => setModalsForm({ startDate: true, endDate: false })}
                 />
-            </View>
-            <View style={{ gap: 5 }}>
-                <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <View style={{ flex: 1 }}>
-                        <CustomInputWithBottomSheet
-                            placeholder='Seleccione un cliente'
-                            value={eventForm.client}
-                            items={clientState.clients.map(client => {
-                                return { label: client.name, value: client.id }
-                            })}
-                            onPress={(value) => {
-                                setEventForm(prev => ({
-                                    ...prev,
-                                    client: value
-                                }))
-                            }}
-                            icon='account-group-outline'
-                            title='Clientes'
-                            key={'client'}
-                        />
-                    </View>
-                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ClientScreen')} />
-                </View>
-            </View>
-            <View style={{ gap: 5 }}>
+                <DatePicker
+                    locale='ES'
+                    modal
+                    open={modalsForm.startDate}
+                    date={new Date(eventForm.startDate)}
+                    onConfirm={(date) => {
+                        setModalsForm({
+                            startDate: false,
+                            endDate: false
+                        })
+                        setEventForm(prev => ({
+                            ...prev,
+                            startDate: date.toISOString()
+                        }))
+                    }}
+                    title={'Seleccione fecha de inicio'}
+                    confirmText='Confirmar'
+                    cancelText='Cancelar'
+                    onCancel={() => {
+                        setModalsForm({
+                            startDate: false,
+                            endDate: false
+                        })
+                    }}
+                />
+                <TextInput
+                    label='Fecha de fin'
+                    value={dayjs(eventForm.endDate).format('DD/MM/YYYY HH:mm')}
+                    mode='outlined'
+                    editable={false}
+                    right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: false, endDate: true })} />}
+                    onPressIn={() => setModalsForm({ startDate: false, endDate: true })}
+                />
+                <DatePicker
+                    locale='ES'
+                    modal
+                    open={modalsForm.endDate}
+                    date={new Date(eventForm.endDate)}
+                    onConfirm={(date) => {
+                        setModalsForm({
+                            startDate: false,
+                            endDate: false
+                        })
+                        setEventForm(prev => ({
+                            ...prev,
+                            endDate: date.toISOString()
+                        }))
+                    }}
+                    title={'Seleccione fecha de fin'}
+                    confirmText='Confirmar'
+                    cancelText='Cancelar'
+                    onCancel={() => {
+                        setModalsForm({
+                            startDate: false,
+                            endDate: false
+                        })
+                    }}
+                />
 
-                <Text style={{ fontWeight: 'bold' }}>Servicios</Text>
-
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <View style={{ flex: 1 }}>
-                        <CustomMultipleInputWithBottomSheet
-                            placeholder='Seleccione servicios'
-                            value={eventForm.services}
-                            items={servicesState.services.map(service => {
-                                return { label: service.name, value: service.id }
-                            })}
-                            onPress={(value) => {
-                                const selectedServices = [...eventForm.services]
-                                if (selectedServices.includes(value)) {
-                                    selectedServices.splice(selectedServices.indexOf(value), 1)
-                                } else {
-                                    selectedServices.push(value)
-                                }
-                                setEventForm(prev => ({
-                                    ...prev,
-                                    services: selectedServices
-                                }))
-                            }}
-                            icon='account-wrench-outline'
-                            title='Servicios'
-                            key={'service'}
-                        />
-                    </View>
-                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ServiceScreen')} />
-                </View>
+                <Button style={{ marginTop: 'auto', paddingVertical: 5 }} mode='contained' onPress={handleSubmit} loading={eventState.loading}>
+                    <Text style={{ fontWeight: 'bold', color: 'white' }}>Guardar Evento</Text>
+                </Button>
             </View>
-            <View style={{ gap: 5 }}>
-                <Text style={{ fontWeight: 'bold' }}>Estado</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                    <View style={{ flex: 1 }}>
-                        <CustomInputWithBottomSheet
-                            placeholder='Seleccione un estado'
-                            value={eventForm.status}
-                            items={statusState.statuses.map(status => {
-                                return { label: status.name, value: status.id }
-                            })}
-                            onPress={(value) => {
-                                setEventForm(prev => ({
-                                    ...prev,
-                                    status: value
-                                }))
-                            }}
-                            icon='check'
-                            title='Estados'
-                            key={'status'}
-                        />
-                    </View>
-                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('StatusScreen')} />
-                </View>
-
-            </View>
-            <TextInput
-                label='Fecha de inicio'
-                value={dayjs(eventForm.startDate).format('DD/MM/YYYY HH:mm')}
-                mode='outlined'
-                editable={false}
-                right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: true, endDate: false })} />}
-                onPressIn={() => setModalsForm({ startDate: true, endDate: false })}
-            />
-            <DatePicker
-                locale='ES'
-                modal
-                open={modalsForm.startDate}
-                date={new Date(eventForm.startDate)}
-                onConfirm={(date) => {
-                    setModalsForm({
-                        startDate: false,
-                        endDate: false
-                    })
-                    setEventForm(prev => ({
-                        ...prev,
-                        startDate: date.toISOString()
-                    }))
-                }}
-                title={'Seleccione fecha de inicio'}
-                confirmText='Confirmar'
-                cancelText='Cancelar'
-                onCancel={() => {
-                    setModalsForm({
-                        startDate: false,
-                        endDate: false
-                    })
-                }}
-            />
-            <TextInput
-                label='Fecha de fin'
-                value={dayjs(eventForm.endDate).format('DD/MM/YYYY HH:mm')}
-                mode='outlined'
-                editable={false}
-                right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: false, endDate: true })} />}
-                onPressIn={() => setModalsForm({ startDate: false, endDate: true })}
-            />
-            <DatePicker
-                locale='ES'
-                modal
-                open={modalsForm.endDate}
-                date={new Date(eventForm.endDate)}
-                onConfirm={(date) => {
-                    setModalsForm({
-                        startDate: false,
-                        endDate: false
-                    })
-                    setEventForm(prev => ({
-                        ...prev,
-                        endDate: date.toISOString()
-                    }))
-                }}
-                title={'Seleccione fecha de fin'}
-                confirmText='Confirmar'
-                cancelText='Cancelar'
-                onCancel={() => {
-                    setModalsForm({
-                        startDate: false,
-                        endDate: false
-                    })
-                }}
-            />
-
-            <Button style={{ marginTop: 'auto', paddingVertical: 5 }} mode='contained' onPress={handleSubmit} loading={eventState.loading}>
-                <Text style={{ fontWeight: 'bold', color: 'white' }}>Guardar Evento</Text>
-            </Button>
-        </View>
+        </Pressable>
     )
 }
 
