@@ -43,6 +43,7 @@ const CustomInputWithBottomSheet = ({ value, items, title, icon, placeholder, on
                 selectedValue={value}
                 onPress={(value) => {
                     onPress(value)
+                    bottomSheetRef.current?.dismiss()
                 }}
             />
         </>
