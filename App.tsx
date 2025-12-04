@@ -50,14 +50,26 @@ const AppContent = () => {
 
     // Manejar tap en notificación (cuando la app está en background)
     const unsubscribeNotificationOpen = messaging().onNotificationOpenedApp(async remoteMessage => {
-      console.log('🔔 EventId:', remoteMessage.data?.eventId);
-
       if (remoteMessage.data?.eventId) {
         const eventId = remoteMessage.data.eventId.toString();
         const event = await getEventById(eventId);
         dispatch(setOnOpenNotification(event));
       } else {
         console.warn('⚠️ No se encontró eventId en remoteMessage.data');
+      }
+    });
+
+    // Manejar tap en notificación (cuando la app estaba cerrada)
+    messaging().getInitialNotification().then(async remoteMessage => {
+      if (remoteMessage) {
+
+        if (remoteMessage.data?.eventId) {
+          const eventId = remoteMessage.data.eventId.toString();
+          const event = await getEventById(eventId);
+          dispatch(setOnOpenNotification(event));
+        } else {
+          console.warn('⚠️ No se encontró eventId en remoteMessage.data');
+        }
       }
     });
 
