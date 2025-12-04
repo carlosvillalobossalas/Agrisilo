@@ -70,6 +70,17 @@ const ProfileScreen = () => {
             </View>
 
             <View style={{ gap: 5 }}>
+                <Text style={{ fontWeight: 'bold' }}>Email</Text>
+                <TextInput
+                    value={userForm.email}
+                    placeholder='Email'
+                    mode='outlined'
+                    disabled
+                    right={<TextInput.Icon icon={'email-outline'} />}
+                />
+            </View>
+
+            <View style={{ gap: 5 }}>
                 <Text style={{ fontWeight: 'bold' }}>Contraseña actual</Text>
                 <TextInput
                     label="Contraseña actual"
