@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React, { useState } from 'react'
-import { Portal, SegmentedButtons } from 'react-native-paper'
+import { Button, PaperProvider, SegmentedButtons, useTheme } from 'react-native-paper'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import CustomDropdown from './CustomDropdown'
@@ -15,6 +15,7 @@ interface CustomBottomFilterSheet {
 
 
 const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilterSheet) => {
+    const theme = useTheme()
 
     const eventState = useAppSelector(state => state.eventState)
     const clientState = useAppSelector(state => state.clientState)
@@ -31,29 +32,26 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
     const insets = useSafeAreaInsets();
 
     const handleColorByChange = (value: string) => {
-        console.log(value)
         dispatch(setColorBy(value))
-        // TODO: close modal?
-        // handleSheetChanges(1)
     }
 
     return (
-        <Portal>
-            <BottomSheetModal
-                ref={ref}
-                index={1}
-                snapPoints={['40%', '100%']}
-                enablePanDownToClose={true}
-                backgroundStyle={{
-                    backgroundColor: '#fff',
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                }}
-                handleStyle={{
-                    marginTop: insets.top,
-                }}
-                onChange={handleSheetChanges}
-            >
+        <BottomSheetModal
+            ref={ref}
+            index={1}
+            snapPoints={['40%', '100%']}
+            enablePanDownToClose={true}
+            backgroundStyle={{
+                backgroundColor: '#fff',
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+            }}
+            handleStyle={{
+                marginTop: insets.top,
+            }}
+            onChange={handleSheetChanges}
+        >
+            <PaperProvider theme={theme}>
                 <BottomSheetView
                     style={{
                         flex: 1,
@@ -63,8 +61,9 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                 >
                     <Text style={{ fontSize: 18, fontWeight: 'bold', zIndex: 0 }}>Filtros</Text>
                     <View style={{ marginTop: 20, width: '100%' }}>
+                        <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Estado</Text>
                         <CustomDropdown
-                            placeholder="Estado"
+                            placeholder="Seleccionar estado"
                             value={eventState.config.statusFilter}
                             setValue={(next) => {
 
@@ -89,8 +88,9 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                         />
                         <View style={{ height: 20 }} />
                         <View style={{ zIndex: 2 }}>
+                            <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Servicio</Text>
                             <CustomDropdown
-                                placeholder="Servicio"
+                                placeholder="Seleccionar servicio"
                                 value={eventState.config.serviceFilter}
                                 setValue={(next) => {
 
@@ -116,8 +116,9 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                         </View>
                         <View style={{ height: 20 }} />
                         <View style={{ zIndex: 1 }}>
+                            <Text style={{ fontSize: 14, fontWeight: '600', marginBottom: 8 }}>Cliente</Text>
                             <CustomDropdown
-                                placeholder="Cliente"
+                                placeholder="Seleccionar cliente"
                                 value={eventState.config.clientFilter}
                                 setValue={(next) => {
 
@@ -142,6 +143,7 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                             />
                         </View>
                         <View style={{ height: 20 }} />
+
                         <Text style={{ fontSize: 16, fontWeight: 'bold', zIndex: 0, marginVertical: 10 }}>Colores por:</Text>
                         <SegmentedButtons
                             value={eventState.config.colorBy}
@@ -153,22 +155,26 @@ const CustomBottomFilterSheet = ({ ref, handleSheetChanges }: CustomBottomFilter
                                 { value: 'status', label: 'Estado' },
                                 { value: 'client', label: 'Cliente' },
                             ]}
-                            style={{
-                                backgroundColor: '#e5e5e5',
-                                borderRadius: 112,
-                                marginBottom: 20
-                            }}
-                            theme={{
-                                colors: {
-                                    secondaryContainer: 'white',
-                                },
-                            }}
+                            style={{ marginBottom: 10 }}
                         />
+                        <Button
+                            mode='contained'
+                            onPress={() => {
+                                dispatch(setStatusFilter('none'))
+                                dispatch(setServiceFilter('none'))
+                                dispatch(setClientFilter('none'))
+                            }}
+                            style={{ marginTop: 10 }}
+                        >
+                            <Text style={{ fontWeight: 'bold', color: 'white' }}>
+                                Limpiar filtros
+                            </Text>
+                        </Button>
                     </View>
 
                 </BottomSheetView>
-            </BottomSheetModal>
-        </Portal>
+            </PaperProvider>
+        </BottomSheetModal >
     )
 }
 
