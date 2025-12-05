@@ -29,7 +29,9 @@ const EventScreen = () => {
         startDate: new Date().toISOString(),
         name: '',
         services: [],
-        status: ''
+        status: '',
+        area: 0,
+        location: '',
     })
 
     const [modalsForm, setModalsForm] = useState({
@@ -140,99 +142,107 @@ const EventScreen = () => {
     return (
         <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
             <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 15 }}>
-                <View style={{ gap: 5 }}>
-                    <Text style={{ fontWeight: 'bold' }}>Nombre</Text>
-                    <TextInput
-                        value={eventForm.name}
-                        onChangeText={(text) => setEventForm({ ...eventForm, name: text })}
-                        placeholder='Ingrese el nombre del evento'
-                        mode='outlined'
-
-                        right={<TextInput.Icon icon={'account-outline'} />}
-                        onFocus={() => { DeviceEventEmitter.emit('dismissSheets'); setModalsForm({ startDate: false, endDate: false }) }}
-                    />
-                </View>
-                <View style={{ gap: 5 }}>
-                    <Text style={{ fontWeight: 'bold' }}>Cliente</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <View style={{ flex: 1 }}>
-                            <CustomInputWithBottomSheet
-                                placeholder='Seleccione un cliente'
-                                value={eventForm.client}
-                                items={clientState.clients.map(client => {
-                                    return { label: client.name, value: client.id }
-                                })}
-                                onPress={(value) => {
-                                    setEventForm(prev => ({
-                                        ...prev,
-                                        client: value
-                                    }))
-                                }}
-                                icon='account-group-outline'
-                                title='Clientes'
-                                key={'client'}
-                            />
-                        </View>
-                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ClientScreen')} />
+                <TextInput
+                    label='Nombre'
+                    value={eventForm.name}
+                    onChangeText={(text) => setEventForm({ ...eventForm, name: text })}
+                    placeholder='Ingrese el nombre del evento'
+                    mode='outlined'
+                    right={<TextInput.Icon icon={'account-outline'} />}
+                    onFocus={() => { DeviceEventEmitter.emit('dismissSheets'); setModalsForm({ startDate: false, endDate: false }) }}
+                />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomInputWithBottomSheet
+                            placeholder='Seleccione un cliente'
+                            label='Cliente'
+                            value={eventForm.client}
+                            items={clientState.clients.map(client => {
+                                return { label: client.name, value: client.id }
+                            })}
+                            onPress={(value) => {
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    client: value
+                                }))
+                            }}
+                            icon='account-group-outline'
+                            title='Clientes'
+                            key={'client'}
+                        />
                     </View>
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ClientScreen')} />
                 </View>
-                <View style={{ gap: 5 }}>
-
-                    <Text style={{ fontWeight: 'bold' }}>Servicios</Text>
-
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <View style={{ flex: 1 }}>
-                            <CustomMultipleInputWithBottomSheet
-                                placeholder='Seleccione servicios'
-                                value={eventForm.services}
-                                items={servicesState.services.map(service => {
-                                    return { label: service.name, value: service.id }
-                                })}
-                                onPress={(value) => {
-                                    const selectedServices = [...eventForm.services]
-                                    if (selectedServices.includes(value)) {
-                                        selectedServices.splice(selectedServices.indexOf(value), 1)
-                                    } else {
-                                        selectedServices.push(value)
-                                    }
-                                    setEventForm(prev => ({
-                                        ...prev,
-                                        services: selectedServices
-                                    }))
-                                }}
-                                icon='account-wrench-outline'
-                                title='Servicios'
-                                key={'service'}
-                            />
-                        </View>
-                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ServiceScreen')} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomMultipleInputWithBottomSheet
+                            placeholder='Seleccione servicios'
+                            label='Servicios'
+                            value={eventForm.services}
+                            items={servicesState.services.map(service => {
+                                return { label: service.name, value: service.id }
+                            })}
+                            onPress={(value) => {
+                                const selectedServices = [...eventForm.services]
+                                if (selectedServices.includes(value)) {
+                                    selectedServices.splice(selectedServices.indexOf(value), 1)
+                                } else {
+                                    selectedServices.push(value)
+                                }
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    services: selectedServices
+                                }))
+                            }}
+                            icon='account-wrench-outline'
+                            title='Servicios'
+                            key={'service'}
+                        />
                     </View>
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('ServiceScreen')} />
                 </View>
-                <View style={{ gap: 5 }}>
-                    <Text style={{ fontWeight: 'bold' }}>Estado</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <View style={{ flex: 1 }}>
-                            <CustomInputWithBottomSheet
-                                placeholder='Seleccione un estado'
-                                value={eventForm.status}
-                                items={statusState.statuses.map(status => {
-                                    return { label: status.name, value: status.id }
-                                })}
-                                onPress={(value) => {
-                                    setEventForm(prev => ({
-                                        ...prev,
-                                        status: value
-                                    }))
-                                }}
-                                icon='check'
-                                title='Estados'
-                                key={'status'}
-                            />
-                        </View>
-                        <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('StatusScreen')} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flex: 1 }}>
+                        <CustomInputWithBottomSheet
+                            placeholder='Seleccione un estado'
+                            value={eventForm.status}
+                            label='Estado'
+                            items={statusState.statuses.map(status => {
+                                return { label: status.name, value: status.id }
+                            })}
+                            onPress={(value) => {
+                                setEventForm(prev => ({
+                                    ...prev,
+                                    status: value
+                                }))
+                            }}
+                            icon='check'
+                            title='Estados'
+                            key={'status'}
+                        />
                     </View>
-
+                    <IconButton icon='plus' mode='contained' onPress={() => navigation.navigate('StatusScreen')} />
                 </View>
+                <TextInput
+                    label='Area (hectáreas)'
+                    value={eventForm.area.toString()}
+                    onChangeText={(text) => {
+                        if (text !== '')
+                            setEventForm({ ...eventForm, area: parseFloat(text) })
+                    }}
+                    inputMode='numeric'
+                    placeholder='0'
+                    mode='outlined'
+                    right={<TextInput.Icon icon={'terrain'} />}
+                />
+                <TextInput
+                    label='Ubicación del terreno'
+                    value={eventForm.location}
+                    onChangeText={(text) => setEventForm({ ...eventForm, location: text })}
+                    placeholder='Ingrese la ubicación del terreno'
+                    mode='outlined'
+                    right={<TextInput.Icon icon={'map-marker-outline'} />}
+                />
                 <TextInput
                     label='Fecha de inicio'
                     value={dayjs(eventForm.startDate).format('DD/MM/YYYY HH:mm')}

@@ -8,6 +8,8 @@ export interface IEvent {
     endDate: string
     status: string
     client: string
+    area: number
+    location: string
 }
 
 export interface EventFilters {
@@ -20,8 +22,8 @@ export interface EventFilters {
 
 export interface EventsPDFRow {
     client: string
-    area:string
-    location:string
+    area: string
+    location: string
     service: string
     status: string
     startDate: string

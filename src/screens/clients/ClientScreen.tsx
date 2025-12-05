@@ -22,9 +22,7 @@ const ClientScreen = () => {
     id: '',
     name: '',
     email: '',
-    area: 0,
     phone: 0,
-    location: '',
     color: '#FF0000'
   })
 
@@ -117,21 +115,6 @@ const ClientScreen = () => {
       </View>
 
       <View style={{ gap: 5 }}>
-        <Text style={{ fontWeight: 'bold' }}>Area (hectáreas)</Text>
-        <TextInput
-          value={clientForm.area.toString()}
-          onChangeText={(text) => {
-            if (text !== '')
-              setClientForm({ ...clientForm, area: parseFloat(text) })
-          }}
-          inputMode='numeric'
-          placeholder='0'
-          mode='outlined'
-          right={<TextInput.Icon icon={'terrain'} />}
-        />
-      </View>
-
-      <View style={{ gap: 5 }}>
         <Text style={{ fontWeight: 'bold' }}>Número de teléfono</Text>
         <TextInput
           value={clientForm.phone.toString()}
@@ -143,17 +126,6 @@ const ClientScreen = () => {
           placeholder='Ingrese el número de teléfono'
           mode='outlined'
           right={<TextInput.Icon icon={'phone-outline'} />}
-        />
-      </View>
-
-      <View style={{ gap: 5 }}>
-        <Text style={{ fontWeight: 'bold' }}>Ubicación del terreno</Text>
-        <TextInput
-          value={clientForm.location}
-          onChangeText={(text) => setClientForm({ ...clientForm, location: text })}
-          placeholder='Ingrese la ubicación del terreno'
-          mode='outlined'
-          right={<TextInput.Icon icon={'map-marker-outline'} />}
         />
       </View>
 

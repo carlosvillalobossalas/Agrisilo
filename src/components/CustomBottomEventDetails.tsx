@@ -27,6 +27,8 @@ interface Event {
     endDate: string
     status: Status
     client: Client
+    location: string
+    area: number
 }
 
 
@@ -100,7 +102,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
 
         const detailsStatus: Status = statusState.statuses.find(status => status.id === ev.status) ?? { id: ev.status || '', name: 'Estado eliminado', color: '#cccccc' }
 
-        const detailsClient: Client = clientState.clients.find(client => client.id === ev.client) ?? { id: ev.client || '', name: 'Cliente eliminado', email: '', area: 0, location: '', phone: 0, color: '#cccccc' }
+        const detailsClient: Client = clientState.clients.find(client => client.id === ev.client) ?? { id: ev.client || '', name: 'Cliente eliminado', email: '', phone: 0, color: '#cccccc' }
 
         const details: Event = {
             ...ev,
@@ -108,7 +110,6 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
             status: detailsStatus,
             client: detailsClient
         }
-
         setEventDetails(details)
 
         return () => {
@@ -210,7 +211,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
 
 
                         <View
-                            style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 30 }}>
+                            style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 15 }}>
                             <Icon source={'account-group-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Cliente</Text>
@@ -223,7 +224,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'terrain'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Area (hectáreas)</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.client.area}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.area.toString()}</Text>
                             </View>
 
                         </View>
@@ -232,7 +233,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'map-marker-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Ubicación del terreno</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.client.location}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{eventDetails?.location}</Text>
                             </View>
 
                         </View>

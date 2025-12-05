@@ -19,6 +19,8 @@ export const getAllEvents = (callback: (event: IEvent[]) => void) => {
                 client: raw.client,
                 startDate: raw.startDate.toDate().toISOString(),
                 endDate: raw.endDate.toDate().toISOString(),
+                area: raw.area ?? 0,
+                location: raw.location ?? '',
             }
         })
         callback(data)
@@ -64,6 +66,8 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
             client: raw.client,
             startDate: raw.startDate.toDate().toISOString(),
             endDate: raw.endDate.toDate().toISOString(),
+            area: raw.area ?? 0,
+            location: raw.location ?? '',
         };
     });
 
@@ -140,6 +144,8 @@ export const getEventById = async (id: string): Promise<IEvent | null> => {
             client: raw.client ?? '',
             startDate: raw.startDate?.toDate?.() ? raw.startDate.toDate().toISOString() : new Date(raw.startDate).toISOString(),
             endDate: raw.endDate?.toDate?.() ? raw.endDate.toDate().toISOString() : new Date(raw.endDate).toISOString(),
+            area: raw.area ?? 0,
+            location: raw.location ?? '',
         };
     } catch (error) {
         console.error(error);
