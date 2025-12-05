@@ -8,12 +8,13 @@ interface CustomInputWithBottomSheet {
     value: string,
     items: { label: string, value: string }[],
     placeholder: string,
+    label?: string,
     title: string,
     icon: string,
     onPress: (value: string) => void,
 }
 
-const CustomInputWithBottomSheet = ({ value, items, title, icon, placeholder, onPress }: CustomInputWithBottomSheet) => {
+const CustomInputWithBottomSheet = ({ value, items, title, icon, label = '', placeholder, onPress }: CustomInputWithBottomSheet) => {
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -29,7 +30,7 @@ const CustomInputWithBottomSheet = ({ value, items, title, icon, placeholder, on
     return (
         <>
             <TextInput
-                label=''
+                label={label}
                 value={items.find(item => item.value === value)?.label ?? placeholder}
                 mode='outlined'
                 editable={false}

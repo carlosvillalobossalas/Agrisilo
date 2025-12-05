@@ -8,12 +8,13 @@ interface CustomMultipleInputWithBottomSheet {
     value: string[],
     items: { label: string, value: string }[],
     placeholder: string,
+    label?: string,
     title: string,
     icon: string,
     onPress: (value: string) => void,
 }
 
-const CustomMultipleInputWithBottomSheet = ({ value, items, title, icon, placeholder, onPress }: CustomMultipleInputWithBottomSheet) => {
+const CustomMultipleInputWithBottomSheet = ({ value, items, title, label = '', icon, placeholder, onPress }: CustomMultipleInputWithBottomSheet) => {
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
     const lastDismissedRef = useRef<number>(0);
@@ -31,7 +32,7 @@ const CustomMultipleInputWithBottomSheet = ({ value, items, title, icon, placeho
     return (
         <>
             <TextInput
-                label=''
+                label={label}
                 value={currentValue}
                 mode='outlined'
                 editable={false}
