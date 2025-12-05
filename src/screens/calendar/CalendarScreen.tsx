@@ -202,7 +202,9 @@ const CalendarScreen = () => {
         maxVisibleEventCount={2}
         moreLabel={`+{moreCount} más`}
         showAdjacentMonths={false}
-        swipeEnabled
+        onSwipeEnd={(date) => {
+          setDate(date)
+        }}
       />
 
       {/* Filtros */}
