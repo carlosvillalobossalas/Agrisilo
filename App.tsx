@@ -28,8 +28,9 @@ const AppContent = () => {
 
   useEffect(() => {
 
-    // Manejar notificaciones en foreground
+    // Manejar notificaciones en foreground (cuando la app está abierta)
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
+      console.log('📱 Foreground notification received');
       Alert.alert(
         remoteMessage.notification?.title ?? 'Notificación',
         remoteMessage.notification?.body,
@@ -39,8 +40,11 @@ const AppContent = () => {
             text: 'Ver', onPress: async () => {
               if (remoteMessage.data?.eventId) {
                 const eventId = remoteMessage.data.eventId.toString();
+                console.log('🔍 Opening event from foreground alert:', eventId);
                 const event = await getEventById(eventId);
-                dispatch(setOnOpenNotification(event));
+                if (event) {
+                  dispatch(setOnOpenNotification(event));
+                }
               }
             }
           }
@@ -48,30 +52,52 @@ const AppContent = () => {
       );
     });
 
-    // Manejar tap en notificación (cuando la app está en background)
+    // Manejar tap en notificación cuando la app está en background
     const unsubscribeNotificationOpen = messaging().onNotificationOpenedApp(async remoteMessage => {
+      console.log('📱 Background notification opened');
+      
       if (remoteMessage.data?.eventId) {
         const eventId = remoteMessage.data.eventId.toString();
+        console.log('🔍 Fetching event with ID:', eventId);
+        
         const event = await getEventById(eventId);
-        dispatch(setOnOpenNotification(event));
-      } else {
-        console.warn('⚠️ No se encontró eventId en remoteMessage.data');
-      }
-    });
-
-    // Manejar tap en notificación (cuando la app estaba cerrada)
-    messaging().getInitialNotification().then(async remoteMessage => {
-      if (remoteMessage) {
-
-        if (remoteMessage.data?.eventId) {
-          const eventId = remoteMessage.data.eventId.toString();
-          const event = await getEventById(eventId);
+        console.log('✅ Event fetched:', event);
+        
+        if (event) {
           dispatch(setOnOpenNotification(event));
         } else {
-          console.warn('⚠️ No se encontró eventId en remoteMessage.data');
+          console.warn('⚠️ Event not found for ID:', eventId);
         }
+      } else {
+        console.warn('⚠️ No eventId in notification data');
       }
     });
+
+    // Manejar SOLO cuando la app se abre por primera vez desde una notificación (killed state)
+    // Este solo se ejecuta una vez al montar el componente
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        if (remoteMessage) {
+          console.log('🚀 App opened from killed state via notification');
+          
+          if (remoteMessage.data?.eventId) {
+            const eventId = remoteMessage.data.eventId.toString();
+            console.log('🔍 Fetching event with ID:', eventId);
+            
+            const event = await getEventById(eventId);
+            console.log('✅ Event fetched:', event);
+            
+            if (event) {
+              dispatch(setOnOpenNotification(event));
+            } else {
+              console.warn('⚠️ Event not found for ID:', eventId);
+            }
+          } else {
+            console.warn('⚠️ No eventId in notification data');
+          }
+        }
+      });
 
     return () => {
       unsubscribeForeground();
