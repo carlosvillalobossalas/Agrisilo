@@ -6,25 +6,28 @@ import { Button, IconButton, TextInput } from 'react-native-paper'
 import { useDispatch } from 'react-redux'
 import { authLoading } from '../../store/slices/authSlice'
 import { updateUser } from '../../services/auth'
+import { useNavigation } from '@react-navigation/native'
 
 const UserScreen = () => {
+
+    const navigation = useNavigation()
+
     const authState = useAppSelector(state => state.authState)
     const dispatch = useDispatch()
     const [userForm, setUserForm] = useState<User | null>(null)
 
     useEffect(() => {
-        console.log(authState.userFSNotLogged)
         setUserForm(authState.userFSNotLogged)
     }, [authState.userFSNotLogged])
 
     const handleSubmit = async () => {
         try {
             if (!userForm) return
-            console.log(userForm)
             dispatch(authLoading(true))
             await updateUser(userForm)
 
             dispatch(authLoading(false))
+            navigation.goBack()
         } catch (error) {
             console.error(error)
         }
@@ -44,6 +47,17 @@ const UserScreen = () => {
                     mode='outlined'
                     disabled
                     right={<TextInput.Icon icon={'account-outline'} />}
+                />
+            </View>
+
+            <View style={{ gap: 5 }}>
+                <Text style={{ fontWeight: 'bold' }}>Email</Text>
+                <TextInput
+                    value={userForm.email}
+                    placeholder='Email'
+                    mode='outlined'
+                    disabled
+                    right={<TextInput.Icon icon={'email-outline'} />}
                 />
             </View>
 
