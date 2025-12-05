@@ -49,7 +49,7 @@ const ClientsScreen = () => {
                             icon='chevron-right'
                             labelStyle={{ fontWeight: 'bold' }}
                         >
-                            <Text>{client.email}</Text>
+                            <Text>{client?.email || (client?.phone ? client.phone.toString() : '')}</Text>
                         </CustomButtonWithIconRight>
                     ))
             }
