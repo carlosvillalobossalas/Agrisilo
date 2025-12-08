@@ -6,10 +6,10 @@ import { getAllClients } from '../services/clients';
 import { getAllEvents } from '../services/events';
 import { getAllServices } from '../services/services';
 import { getAllStatus } from '../services/status';
-import { getUser, saveUserFCMToken } from '../services/auth';
+import { getAllUsers, getUser, saveUserFCMToken } from '../services/auth';
 import { HeaderShareButton } from '../components/CustomHeaderShareButton';
 import { IconButton, useTheme } from 'react-native-paper';
-import { loginFailure, loginStart, loginSuccess } from '../store/slices/authSlice';
+import { loginFailure, loginStart, loginSuccess, setAllUsers } from '../store/slices/authSlice';
 import { setAllClients } from '../store/slices/clientSlice';
 import { setAllEvents } from '../store/slices/eventSlice';
 import { setAllServices } from '../store/slices/serviceSlice';
@@ -38,6 +38,7 @@ import ToDoScreen from '../screens/todos/ToDoScreen';
 import UserScreen from '../screens/users/UserScreen';
 import UsersScreen from '../screens/users/UsersScreen';
 import RemindersScreen from '../screens/reminders/RemindersScreen';
+import ReminderScreen from '../screens/reminders/ReminderScreen';
 
 
 const AuthStack = createNativeStackNavigator({
@@ -214,6 +215,16 @@ const RootStack = createNativeStackNavigator({
             options: {
                 headerShown: true,
                 headerTitle: 'Agregar Cliente',
+            },
+        },
+        ReminderScreen: {
+            screen: ReminderScreen,
+            headerStyle: {
+                height: 110
+            },
+            options: {
+                headerShown: true,
+                headerTitle: 'Agregar Recordatorio',
             },
         },
         ServiceScreen: {
@@ -461,6 +472,14 @@ export default function Navigation() {
             return () => unsubscribe()
         }
     }, [user])
+
+    useEffect(() => {
+        const unsubscribe = getAllUsers((data) => {
+            console.log('users', data)
+            dispatch(setAllUsers(data))
+        })
+        return () => unsubscribe()
+    }, [])
 
 
     if (initializing) return null;

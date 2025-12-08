@@ -1,11 +1,11 @@
 import { Alert, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { FAB, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import { useDispatch } from 'react-redux'
-import { createInvite, getAllUsers, sendInviteEmail } from '../../services/auth'
-import { setAllUsers, setUserFSNotLogged } from '../../store/slices/authSlice'
+import { createInvite, sendInviteEmail } from '../../services/auth'
+import { setUserFSNotLogged } from '../../store/slices/authSlice'
 import { useNavigation } from '@react-navigation/native'
 
 const UsersScreen = () => {
@@ -15,13 +15,7 @@ const UsersScreen = () => {
 
     const [filterValue, setFilterValue] = useState('')
 
-    useEffect(() => {
-        const unsubscribe = getAllUsers((data) => {
-            console.log('users', data)
-            dispatch(setAllUsers(data))
-        })
-        return () => unsubscribe()
-    }, [])
+
 
     const handleInviteUser = () => {
         Alert.prompt(
@@ -30,7 +24,6 @@ const UsersScreen = () => {
             [
                 {
                     text: 'Cancelar',
-                    onPress: () => {},
                     style: 'cancel',
                 },
                 {
