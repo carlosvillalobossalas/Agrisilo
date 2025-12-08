@@ -104,21 +104,21 @@ const AppTabs = createBottomTabNavigator({
                 }
             }
         },
-        Clientes: {
-            screen: ClientsScreen,
-            options: ({ navigation }) => ({
-                tabBarIcon: ({ focused }) => {
-                    const { colors } = useTheme()
-                    return (
-                        <IconButton
-                            icon="account-group-outline"
-                            iconColor={focused ? colors.primary : colors.outline}
-                        />
-                    )
-                },
-                headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ClientScreen')} />
-            })
-        },
+        // Clientes: {
+        //     screen: ClientsScreen,
+        //     options: ({ navigation }) => ({
+        //         tabBarIcon: ({ focused }) => {
+        //             const { colors } = useTheme()
+        //             return (
+        //                 <IconButton
+        //                     icon="account-group-outline"
+        //                     iconColor={focused ? colors.primary : colors.outline}
+        //                 />
+        //             )
+        //         },
+        //         headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ClientScreen')} />
+        //     })
+        // },
         Config: {
             screen: ConfigScreen,
             options: {
@@ -175,6 +175,35 @@ const RootStack = createNativeStackNavigator({
                 headerTitle: 'PDF',
                 headerRight: () => <HeaderShareButton />,
             },
+        },
+        ClientsScreen: {
+            screen: ClientsScreen,
+            headerStyle: {
+                // height: 110,
+            },
+            options: ({ navigation }) => ({
+                // headerTransparent: true,
+                headerShown: true,
+                headerShadowVisible: false,
+                headerTitle: 'Clientes',
+                headerStyle: {
+                },
+                headerRight: () => (
+                    <TouchableOpacity
+                        onPress={() => navigation.navigate('ClientScreen')}
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.25)',
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="plus" size={28} color="#000" />
+                    </TouchableOpacity>
+                ),
+
+
+
+            })
         },
         ClientScreen: {
             screen: ClientScreen,
@@ -314,7 +343,7 @@ export default function Navigation() {
         try {
 
             const authStatus = await messaging().requestPermission();
-            
+
             const enabled =
                 authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
                 authStatus === messaging.AuthorizationStatus.PROVISIONAL;

@@ -18,11 +18,13 @@ const ConfigScreen = () => {
   }
   return (
     <View style={{ flex: 1, paddingVertical: 30, paddingHorizontal: 20, gap: 10 }}>
-      <CustomButtonTwoIcons label={'Mi Perfil'} iconLeft={"account-circle-outline"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('ProfileScreen') }}/>
+      <CustomButtonTwoIcons label={'Mi Perfil'} iconLeft={"account-circle-outline"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('ProfileScreen') }} />
       <View style={{ height: 20 }} />
       <CustomButtonTwoIcons label={'Lista de usuarios'} iconLeft={"account-multiple-outline"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('UsersScreen') }} />
       <CustomButtonTwoIcons label={'Lista de servicios'} iconLeft={"account-wrench-outline"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('ServicesScreen') }} />
       <CustomButtonTwoIcons label={'Lista de estados'} iconLeft={"list-status"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('StatusesScreen') }} />
+      <CustomButtonTwoIcons label={'Lista de clientes'} iconLeft={"account-group-outline"} iconRight={"chevron-right"} onPress={() => { navigation.navigate('ClientsScreen') }} />
+
       <Button
         style={{
           marginTop: 20,
