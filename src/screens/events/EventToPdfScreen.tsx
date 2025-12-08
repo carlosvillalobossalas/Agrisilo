@@ -72,8 +72,8 @@ const EventToPdfScreen = () => {
             const client = clientState.clients.find(client => client.id === ev.client)
             return {
                 client: client?.name || 'Desconocido',
-                area: client?.area.toString() || 'Desconocido',
-                location: client?.location || 'Desconocido',
+                area: ev?.area.toString() || 'Desconocido',
+                location: ev?.location || 'Desconocido',
                 service: ev.services.map(srvId => servicesState.services.find(srv => srv.id === srvId)?.name || 'Desconocido').join(', '),
                 status: statusState.statuses.find(status => status.id === ev.status)?.name || 'Desconocido',
                 startDate: dayjs(ev.startDate).format('DD/MM/YYYY HH:mm'),
