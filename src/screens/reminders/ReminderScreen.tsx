@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import { View, Pressable, Keyboard, Alert } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
+import { useDispatch } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
 import { IReminder } from '../../interfaces/reminders'
+import { saveReminder } from '../../services/reminders'
+import { reminderLoading } from '../../store/slices/reminderSlice'
 import CustomInputWithBottomSheet from '../../components/CustomInputWithBottomSheet'
 import CustomMultipleInputWithBottomSheet from '../../components/CustomMultipleInputWithBottomSheet'
 import DatePicker from 'react-native-date-picker'
@@ -11,6 +15,9 @@ import dayjs from 'dayjs'
 const ReminderScreen = () => {
     const eventState = useAppSelector(state => state.eventState)
     const authState = useAppSelector(state => state.authState)
+    const reminderState = useAppSelector(state => state.reminderState)
+    const dispatch = useDispatch()
+    const navigation = useNavigation()
 
     const [reminderForm, setReminderForm] = useState<IReminder>({
         id: '',
@@ -22,7 +29,7 @@ const ReminderScreen = () => {
 
     const [showDatePicker, setShowDatePicker] = useState(false)
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // Validar que todos los campos estén completos
         if (!reminderForm.eventId) {
             Alert.alert('Validación', 'Debes seleccionar un evento')
@@ -39,13 +46,35 @@ const ReminderScreen = () => {
             return
         }
 
-        console.log('📋 Datos del recordatorio:', {
-            eventId: reminderForm.eventId,
-            eventName: eventState.events.find(e => e.id === reminderForm.eventId)?.name,
-            reminderDate: dayjs(reminderForm.reminderDate).format('DD/MM/YYYY HH:mm'),
-            userIds: reminderForm.userIds,
-            users: authState.users.filter(u => reminderForm.userIds.includes(u.id)).map(u => u.name)
-        })
+        // Validar que la fecha del recordatorio sea futura
+        if (new Date(reminderForm.reminderDate) <= new Date()) {
+            Alert.alert('Validación', 'La fecha del recordatorio debe ser posterior a la fecha actual')
+            return
+        }
+
+        try {
+            dispatch(reminderLoading(true))
+            await saveReminder(reminderForm)
+            dispatch(reminderLoading(false))
+            
+            Alert.alert(
+                'Éxito',
+                'Recordatorio guardado correctamente. Se enviará la notificación en la fecha programada.',
+                [{ text: 'OK', onPress: () => navigation.goBack() }]
+            )
+            
+            console.log('📋 Recordatorio guardado:', {
+                eventId: reminderForm.eventId,
+                eventName: eventState.events.find(e => e.id === reminderForm.eventId)?.name,
+                reminderDate: dayjs(reminderForm.reminderDate).format('DD/MM/YYYY HH:mm'),
+                userIds: reminderForm.userIds,
+                users: authState.users.filter(u => reminderForm.userIds.includes(u.id)).map(u => u.name)
+            })
+        } catch (error) {
+            console.error('Error al guardar recordatorio:', error)
+            dispatch(reminderLoading(false))
+            Alert.alert('Error', 'No se pudo guardar el recordatorio. Intenta de nuevo.')
+        }
     }
 
     return (
@@ -148,6 +177,7 @@ const ReminderScreen = () => {
                     style={{ marginTop: 'auto', paddingVertical: 5 }} 
                     mode='contained' 
                     onPress={handleSubmit}
+                    loading={reminderState.loading}
                 >
                     <Text style={{ fontWeight: 'bold', color: 'white' }}>
                         Guardar Recordatorio

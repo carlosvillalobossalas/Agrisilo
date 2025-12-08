@@ -4,4 +4,5 @@ export interface IReminder {
     reminderDate: string
     userIds: string[]
     createdAt: string
+    sent?: boolean
 }
