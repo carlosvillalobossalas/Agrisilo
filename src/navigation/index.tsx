@@ -37,6 +37,7 @@ import StatusScreen from '../screens/status/StatusScreen';
 import ToDoScreen from '../screens/todos/ToDoScreen';
 import UserScreen from '../screens/users/UserScreen';
 import UsersScreen from '../screens/users/UsersScreen';
+import RemindersScreen from '../screens/reminders/RemindersScreen';
 
 
 const AuthStack = createNativeStackNavigator({
@@ -104,21 +105,21 @@ const AppTabs = createBottomTabNavigator({
                 }
             }
         },
-        // Clientes: {
-        //     screen: ClientsScreen,
-        //     options: ({ navigation }) => ({
-        //         tabBarIcon: ({ focused }) => {
-        //             const { colors } = useTheme()
-        //             return (
-        //                 <IconButton
-        //                     icon="account-group-outline"
-        //                     iconColor={focused ? colors.primary : colors.outline}
-        //                 />
-        //             )
-        //         },
-        //         headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ClientScreen')} />
-        //     })
-        // },
+        Recordatorios: {
+            screen: RemindersScreen,
+            options: ({ navigation }) => ({
+                tabBarIcon: ({ focused }) => {
+                    const { colors } = useTheme()
+                    return (
+                        <IconButton
+                            icon="calendar-clock-outline"
+                            iconColor={focused ? colors.primary : colors.outline}
+                        />
+                    )
+                },
+                headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ReminderScreen')} />
+            })
+        },
         Config: {
             screen: ConfigScreen,
             options: {
