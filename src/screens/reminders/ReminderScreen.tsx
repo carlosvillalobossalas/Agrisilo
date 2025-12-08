@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Pressable, Keyboard } from 'react-native'
+import { View, Pressable, Keyboard, Alert } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import { IReminder } from '../../interfaces/reminders'
@@ -23,6 +23,22 @@ const ReminderScreen = () => {
     const [showDatePicker, setShowDatePicker] = useState(false)
 
     const handleSubmit = () => {
+        // Validar que todos los campos estén completos
+        if (!reminderForm.eventId) {
+            Alert.alert('Validación', 'Debes seleccionar un evento')
+            return
+        }
+        
+        if (!reminderForm.reminderDate) {
+            Alert.alert('Validación', 'Debes seleccionar una fecha y hora para el recordatorio')
+            return
+        }
+        
+        if (reminderForm.userIds.length === 0) {
+            Alert.alert('Validación', 'Debes seleccionar al menos un usuario a notificar')
+            return
+        }
+
         console.log('📋 Datos del recordatorio:', {
             eventId: reminderForm.eventId,
             eventName: eventState.events.find(e => e.id === reminderForm.eventId)?.name,
