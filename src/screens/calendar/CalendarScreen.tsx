@@ -172,7 +172,7 @@ const CalendarScreen = () => {
         locale="es"
         events={events}
         date={date}
-        height={600}
+        height={700}
         mode={mode}
         eventCellStyle={(event) => ({
           backgroundColor: event.color,
@@ -199,7 +199,7 @@ const CalendarScreen = () => {
           }
         }}
         eventMinHeightForMonthView={20}
-        maxVisibleEventCount={2}
+        maxVisibleEventCount={3}
         moreLabel={`+{moreCount} más`}
         showAdjacentMonths={false}
         onSwipeEnd={(date) => {
