@@ -1,4 +1,4 @@
-import { View, Text, StyleProp, TextStyle } from 'react-native'
+import { View, Text, StyleProp, TextStyle, ViewStyle } from 'react-native'
 import React from 'react'
 import { Button, Icon } from 'react-native-paper'
 
@@ -8,9 +8,11 @@ interface CustomButtonWithIconRightProps {
     mode?: "elevated" | "text" | "outlined" | "contained" | "contained-tonal" | undefined
     labelStyle?: StyleProp<TextStyle>
     children?: React.ReactNode
+    style?: StyleProp<ViewStyle>
+    contentStyle?: StyleProp<ViewStyle>
     onPress?: () => void
 }
-const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
+const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, style, contentStyle, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
     return (
         <Button
             mode={mode}
@@ -19,11 +21,13 @@ const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, o
                 width: '100%',
                 height: 62,
                 backgroundColor: 'white',
+                ...style,
             }}
             contentStyle={{
                 height: 62,
                 alignItems: 'center',
-                justifyContent: 'flex-start'
+                justifyContent: 'flex-start',
+                ...contentStyle,
             }}
             onPress={onPress}
         >
