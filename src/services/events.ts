@@ -95,7 +95,12 @@ export const getFilteredEvents = async (filters: EventFilters): Promise<IEvent[]
 
     data = data.filter(ev => {
         const eventStart = new Date(ev.startDate).getTime();
-        return eventStart >= start && eventStart <= end;
+        const eventEnd = new Date(ev.endDate).getTime();
+        
+        // El evento se cruza con el rango si:
+        // - Empieza antes o durante el rango Y termina después o durante el inicio del rango
+        // - O dicho de otra forma: el evento termina después del inicio del rango Y empieza antes del fin del rango
+        return eventEnd >= start && eventStart <= end;
     });
 
     return data;

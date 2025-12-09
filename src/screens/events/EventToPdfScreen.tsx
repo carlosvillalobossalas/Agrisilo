@@ -30,9 +30,9 @@ const EventToPdfScreen = () => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [eventForm, setEventForm] = useState<EventForm>({
-        clients: [],
-        services: [],
-        statuses: [],
+        clients: clientState.clients.map(c => c.id),
+        services: servicesState.services.map(s => s.id),
+        statuses: statusState.statuses.map(s => s.id),
         endDate: new Date().toISOString(),
         startDate: new Date().toISOString(),
     })
@@ -101,7 +101,14 @@ const EventToPdfScreen = () => {
                 <Text style={{ fontWeight: 'bold' }}>Cliente(s)</Text>
                 <CustomMultipleInputWithBottomSheet
                     placeholder='Seleccione clientes'
-                    value={eventForm.clients}
+                    value={(() => {
+                        if (eventForm.clients.length === 0) return []
+                        const allClientIds = clientState.clients.map(c => c.id)
+                        const allSelected = eventForm.clients.length === allClientIds.length && 
+                                          allClientIds.every(id => eventForm.clients.includes(id))
+                        if (allSelected) return ['all']
+                        return eventForm.clients
+                    })()}
                     items={
                         [
                             { label: 'Todos', value: 'all' },
@@ -111,24 +118,27 @@ const EventToPdfScreen = () => {
                         ]
                     }
                     onPress={(value) => {
-                        const selectedClients = [...eventForm.clients]
-                        if (value === 'all' && !selectedClients.includes('all')) {
+                        if (value === 'all') {
+                            const allClientIds = clientState.clients.map(c => c.id)
+                            const allSelected = eventForm.clients.length === allClientIds.length && 
+                                               allClientIds.every(id => eventForm.clients.includes(id))
+                            
                             setEventForm(prev => ({
                                 ...prev,
-                                clients: clientState.clients.map(client => client.id)
+                                clients: allSelected ? [] : allClientIds
                             }))
-                            return
-                        }
-
-                        if (selectedClients.includes(value)) {
-                            selectedClients.splice(selectedClients.indexOf(value), 1)
                         } else {
-                            selectedClients.push(value)
+                            const selectedClients = [...eventForm.clients]
+                            if (selectedClients.includes(value)) {
+                                selectedClients.splice(selectedClients.indexOf(value), 1)
+                            } else {
+                                selectedClients.push(value)
+                            }
+                            setEventForm(prev => ({
+                                ...prev,
+                                clients: selectedClients
+                            }))
                         }
-                        setEventForm(prev => ({
-                            ...prev,
-                            clients: selectedClients
-                        }))
                     }}
                     icon='account-group-outline'
                     title='Clientes'
@@ -142,7 +152,14 @@ const EventToPdfScreen = () => {
 
                 <CustomMultipleInputWithBottomSheet
                     placeholder='Seleccione servicios'
-                    value={eventForm.services}
+                    value={(() => {
+                        if (eventForm.services.length === 0) return []
+                        const allServiceIds = servicesState.services.map(s => s.id)
+                        const allSelected = eventForm.services.length === allServiceIds.length && 
+                                          allServiceIds.every(id => eventForm.services.includes(id))
+                        if (allSelected) return ['all']
+                        return eventForm.services
+                    })()}
                     items={
                         [
                             { label: 'Todos', value: 'all' }, ...servicesState.services.map(service => {
@@ -150,25 +167,27 @@ const EventToPdfScreen = () => {
                             })]
                     }
                     onPress={(value) => {
-                        const selectedServices = [...eventForm.services]
-
-                        if (value === 'all' && !selectedServices.includes('all')) {
+                        if (value === 'all') {
+                            const allServiceIds = servicesState.services.map(s => s.id)
+                            const allSelected = eventForm.services.length === allServiceIds.length && 
+                                               allServiceIds.every(id => eventForm.services.includes(id))
+                            
                             setEventForm(prev => ({
                                 ...prev,
-                                services: servicesState.services.map(service => service.id)
+                                services: allSelected ? [] : allServiceIds
                             }))
-                            return
-                        }
-
-                        if (selectedServices.includes(value)) {
-                            selectedServices.splice(selectedServices.indexOf(value), 1)
                         } else {
-                            selectedServices.push(value)
+                            const selectedServices = [...eventForm.services]
+                            if (selectedServices.includes(value)) {
+                                selectedServices.splice(selectedServices.indexOf(value), 1)
+                            } else {
+                                selectedServices.push(value)
+                            }
+                            setEventForm(prev => ({
+                                ...prev,
+                                services: selectedServices
+                            }))
                         }
-                        setEventForm(prev => ({
-                            ...prev,
-                            services: selectedServices
-                        }))
                     }}
                     icon='account-wrench-outline'
                     title='Servicios'
@@ -182,7 +201,14 @@ const EventToPdfScreen = () => {
 
                 <CustomMultipleInputWithBottomSheet
                     placeholder='Seleccione estados'
-                    value={eventForm.statuses}
+                    value={(() => {
+                        if (eventForm.statuses.length === 0) return []
+                        const allStatusIds = statusState.statuses.map(s => s.id)
+                        const allSelected = eventForm.statuses.length === allStatusIds.length && 
+                                          allStatusIds.every(id => eventForm.statuses.includes(id))
+                        if (allSelected) return ['all']
+                        return eventForm.statuses
+                    })()}
                     items={
                         [
                             { label: 'Todos', value: 'all' }, ...statusState.statuses.map(status => {
@@ -190,25 +216,27 @@ const EventToPdfScreen = () => {
                             })]
                     }
                     onPress={(value) => {
-                        const selectedStatuses = [...eventForm.statuses]
-
-                        if (value === 'all' && !selectedStatuses.includes('all')) {
+                        if (value === 'all') {
+                            const allStatusIds = statusState.statuses.map(s => s.id)
+                            const allSelected = eventForm.statuses.length === allStatusIds.length && 
+                                               allStatusIds.every(id => eventForm.statuses.includes(id))
+                            
                             setEventForm(prev => ({
                                 ...prev,
-                                statuses: statusState.statuses.map(status => status.id)
+                                statuses: allSelected ? [] : allStatusIds
                             }))
-                            return
-                        }
-
-                        if (selectedStatuses.includes(value)) {
-                            selectedStatuses.splice(selectedStatuses.indexOf(value), 1)
                         } else {
-                            selectedStatuses.push(value)
+                            const selectedStatuses = [...eventForm.statuses]
+                            if (selectedStatuses.includes(value)) {
+                                selectedStatuses.splice(selectedStatuses.indexOf(value), 1)
+                            } else {
+                                selectedStatuses.push(value)
+                            }
+                            setEventForm(prev => ({
+                                ...prev,
+                                statuses: selectedStatuses
+                            }))
                         }
-                        setEventForm(prev => ({
-                            ...prev,
-                            statuses: selectedStatuses
-                        }))
                     }}
                     icon='account-wrench-outline'
                     title='Estados'
@@ -218,7 +246,7 @@ const EventToPdfScreen = () => {
 
             <TextInput
                 label='Fecha de inicio'
-                value={dayjs(eventForm.startDate).format('DD/MM/YYYY HH:mm')}
+                value={dayjs(eventForm.startDate).format('DD/MM/YYYY')}
                 mode='outlined'
                 editable={false}
                 right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: true, endDate: false })} />}
@@ -227,6 +255,7 @@ const EventToPdfScreen = () => {
             <DatePicker
                 locale='ES'
                 modal
+                mode='date'
                 open={modalsForm.startDate}
                 date={new Date(eventForm.startDate)}
                 onConfirm={(date) => {
@@ -234,9 +263,12 @@ const EventToPdfScreen = () => {
                         startDate: false,
                         endDate: false
                     })
+                    // Establecer hora a 00:00:00
+                    const startOfDay = new Date(date)
+                    startOfDay.setHours(0, 0, 0, 0)
                     setEventForm(prev => ({
                         ...prev,
-                        startDate: date.toISOString()
+                        startDate: startOfDay.toISOString()
                     }))
                 }}
                 title={'Seleccione fecha de inicio'}
@@ -252,7 +284,7 @@ const EventToPdfScreen = () => {
 
             <TextInput
                 label='Fecha de fin'
-                value={dayjs(eventForm.endDate).format('DD/MM/YYYY HH:mm')}
+                value={dayjs(eventForm.endDate).format('DD/MM/YYYY')}
                 mode='outlined'
                 editable={false}
                 right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: false, endDate: true })} />}
@@ -261,6 +293,7 @@ const EventToPdfScreen = () => {
             <DatePicker
                 locale='ES'
                 modal
+                mode='date'
                 open={modalsForm.endDate}
                 date={new Date(eventForm.endDate)}
                 onConfirm={(date) => {
@@ -268,9 +301,12 @@ const EventToPdfScreen = () => {
                         startDate: false,
                         endDate: false
                     })
+                    // Establecer hora a 23:59:59
+                    const endOfDay = new Date(date)
+                    endOfDay.setHours(23, 59, 59, 999)
                     setEventForm(prev => ({
                         ...prev,
-                        endDate: date.toISOString()
+                        endDate: endOfDay.toISOString()
                     }))
                 }}
                 title={'Seleccione fecha de fin'}
