@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
@@ -17,7 +17,7 @@ const ServicesScreen = () => {
     const [filterValue, setFilterValue] = useState('')
 
     return (
-        <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+        <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
                 mode='flat'
                 left={<TextInput.Icon icon={'magnify'} />}
@@ -31,8 +31,9 @@ const ServicesScreen = () => {
                     borderRadius: 10
                 }}
             />
-            {
-                serviceState.services
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
+                {
+                    serviceState.services
                     .filter(service => {
                         if (filterValue === '') {
                             return true
@@ -58,7 +59,8 @@ const ServicesScreen = () => {
                             </ColorPicker>
                         </CustomButtonWithIconRight>
                     ))
-            }
+                }
+            </ScrollView>
         </View >
     )
 }

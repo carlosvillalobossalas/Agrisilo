@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Text, TextInput, Chip } from 'react-native-paper'
 import { useAppSelector } from '../../store'
@@ -37,7 +37,7 @@ const RemindersScreen = () => {
     }, [dispatch])
 
     return (
-        <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+        <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
                 mode='flat'
                 left={<TextInput.Icon icon={'magnify'} />}
@@ -51,8 +51,9 @@ const RemindersScreen = () => {
                     borderRadius: 10
                 }}
             />
-            {
-                reminderState.reminders
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
+                {
+                    reminderState.reminders
                     .filter(reminder => {
                         if (filterValue === '') return true
                         const event = eventState.events.find(e => e.id === reminder.eventId)
@@ -122,7 +123,8 @@ const RemindersScreen = () => {
                             </View>
                         )
                     })
-            }
+                }
+            </ScrollView>
         </View>
     )
 }

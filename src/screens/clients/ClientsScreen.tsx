@@ -3,7 +3,7 @@ import { Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
 import React, { useState } from 'react'
 
@@ -16,7 +16,7 @@ const ClientsScreen = () => {
     const [filterValue, setFilterValue] = useState('')
 
     return (
-        <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+        <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
                 mode='flat'
                 left={<TextInput.Icon icon={'magnify'} />}
@@ -30,8 +30,9 @@ const ClientsScreen = () => {
                     borderRadius: 10
                 }}
             />
-            {
-                clientState.clients
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
+                {
+                    clientState.clients
                     .filter(client => {
                         if (filterValue === '') {
                             return true
@@ -52,7 +53,8 @@ const ClientsScreen = () => {
                             <Text>{client?.email || (client?.phone ? client.phone.toString() : '')}</Text>
                         </CustomButtonWithIconRight>
                     ))
-            }
+                }
+            </ScrollView>
         </View >
     )
 }

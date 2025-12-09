@@ -1,4 +1,4 @@
-import { Alert, View } from 'react-native'
+import { Alert, View, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { FAB, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
@@ -55,7 +55,7 @@ const UsersScreen = () => {
     }
 
     return (
-        <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+        <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
                 mode='flat'
                 left={<TextInput.Icon icon={'magnify'} />}
@@ -69,9 +69,9 @@ const UsersScreen = () => {
                     borderRadius: 10
                 }}
             />
-
-            {
-                authState.users
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
+                {
+                    authState.users
                     .filter(user => {
                         if (user.email === authState.user?.email) return false
                         if (filterValue === '') {
@@ -98,7 +98,8 @@ const UsersScreen = () => {
                             <Text>{user.email}</Text>
                         </CustomButtonWithIconRight>
                     ))
-            }
+                }
+            </ScrollView>
             {
                 authState.userFS?.admin && (
                     <FAB

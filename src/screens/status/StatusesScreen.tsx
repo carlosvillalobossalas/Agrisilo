@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { useAppSelector } from '../../store'
 import CustomButtonWithIconRight from '../../components/CustomButtonWithIconRight'
@@ -17,7 +17,7 @@ const StatusesScreen = () => {
     const [filterValue, setFilterValue] = useState('')
 
     return (
-        <View style={{ flex: 1, gap: 10, paddingVertical: 20, paddingHorizontal: 25 }}>
+        <View style={{ flex: 1, paddingVertical: 20, paddingHorizontal: 25 }}>
             <TextInput
                 mode='flat'
                 left={<TextInput.Icon icon={'magnify'} />}
@@ -31,8 +31,9 @@ const StatusesScreen = () => {
                     borderRadius: 10
                 }}
             />
-            {
-                statusState.statuses
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
+                {
+                    statusState.statuses
                     .filter(status => {
                         if (filterValue === '') {
                             return true
@@ -58,7 +59,8 @@ const StatusesScreen = () => {
                             </ColorPicker>
                         </CustomButtonWithIconRight>
                     ))
-            }
+                }
+            </ScrollView>
         </View >
     )
 }
