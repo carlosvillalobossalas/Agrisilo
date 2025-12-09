@@ -117,15 +117,25 @@ const ClientScreen = () => {
       <View style={{ gap: 5 }}>
         <Text style={{ fontWeight: 'bold' }}>Número de teléfono</Text>
         <TextInput
-          value={clientForm.phone.toString()}
+          value={clientForm.phone === 0 ? '' : clientForm.phone.toString()}
           onChangeText={(text) => {
-            if (text !== '')
-              setClientForm({ ...clientForm, phone: parseInt(text) })
+            // Remover cualquier caracter que no sea número
+            const cleaned = text.replace(/[^0-9]/g, '')
+            
+            if (cleaned === '') {
+              setClientForm({ ...clientForm, phone: 0 })
+            } else {
+              const parsed = parseInt(cleaned)
+              if (!isNaN(parsed) && isFinite(parsed)) {
+                setClientForm({ ...clientForm, phone: parsed })
+              }
+            }
           }}
-          inputMode='numeric'
-          placeholder='Ingrese el número de teléfono'
+          inputMode='tel'
+          placeholder='Ej: 5551234567'
           mode='outlined'
           right={<TextInput.Icon icon={'phone-outline'} />}
+          keyboardType='phone-pad'
         />
       </View>
 

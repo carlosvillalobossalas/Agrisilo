@@ -225,10 +225,16 @@ const EventScreen = () => {
                 </View>
                 <TextInput
                     label='Area (hectáreas)'
-                    value={eventForm.area.toString()}
+                    value={eventForm.area === 0 ? '' : eventForm.area.toString()}
                     onChangeText={(text) => {
-                        if (text !== '')
-                            setEventForm({ ...eventForm, area: parseFloat(text) })
+                        if (text === '') {
+                            setEventForm({ ...eventForm, area: 0 })
+                        } else {
+                            const parsed = parseFloat(text)
+                            if (!isNaN(parsed) && isFinite(parsed)) {
+                                setEventForm({ ...eventForm, area: parsed })
+                            }
+                        }
                     }}
                     inputMode='numeric'
                     placeholder='0'
