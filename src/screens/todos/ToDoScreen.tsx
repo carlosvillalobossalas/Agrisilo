@@ -27,6 +27,17 @@ const ToDoScreen = () => {
     })
   }
 
+  // 🔵 ASSIGN USER by ID
+  const assignUser = async (id: string, userId: string) => {
+    const todo = todos.find(t => t.id === id)
+    if (!todo) return
+
+    await saveToDo({
+      ...todo,
+      assignedUserId: userId || undefined
+    })
+  }
+
   // 🔵 EDIT by ID
   const editTodo = async (id: string, text: string) => {
     const todo = todos.find(t => t.id === id)
@@ -93,15 +104,21 @@ const ToDoScreen = () => {
 
       {todos
         .sort((a, b) => Number(a.completed) - Number(b.completed))
-        .map(item => (
-          <CustomTodoItem
-            key={item.id}
-            item={item}
-            onToggle={() => toggleTodo(item.id)}
-            onDelete={() => handleDeleteTodo(item.id)}
-            onEdit={(text) => editTodo(item.id, text)}
-          />
-        ))
+        .map(item => {
+          const assignedUser = authState.users.find(u => u.id === item.assignedUserId)
+          return (
+            <CustomTodoItem
+              key={item.id}
+              item={item}
+              onToggle={() => toggleTodo(item.id)}
+              onDelete={() => handleDeleteTodo(item.id)}
+              onEdit={(text) => editTodo(item.id, text)}
+              onAssignUser={(userId) => assignUser(item.id, userId)}
+              users={authState.users.map(u => ({ id: u.id, name: u.name }))}
+              assignedUserName={assignedUser?.name}
+            />
+          )
+        })
       }
 
     </View>
