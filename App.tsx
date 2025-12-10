@@ -14,6 +14,7 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { setOnOpenNotification } from './src/store/slices/eventSlice';
 import { getEventById } from './src/services/events';
+import { setPendingNavigation } from './src/store/slices/notificationSlice';
 
 dayjs.locale('es');
 
@@ -26,6 +27,32 @@ const theme = {
 const AppContent = () => {
   const dispatch = useDispatch();
 
+  const handleNotificationOpen = async (remoteMessage: any) => {
+    if (!remoteMessage?.data) return;
+
+    const notificationType = remoteMessage.data.type;
+
+    if (notificationType === 'todo_reminder') {
+      // Es un recordatorio de tarea, despachar navegación pendiente
+      console.log('🔔 Opening todo reminder');
+      dispatch(setPendingNavigation({ screen: 'Recordatorios', type: 'todo_reminder' }));
+    } else if (remoteMessage.data.eventId) {
+      // Es un evento o recordatorio de evento
+      const eventId = remoteMessage.data.eventId.toString();
+      console.log('🔍 Fetching event with ID:', eventId);
+      
+      const event = await getEventById(eventId);
+      console.log('✅ Event fetched:', event);
+      
+      if (event) {
+        dispatch(setOnOpenNotification(event));
+        dispatch(setPendingNavigation({ screen: 'EventScreen', type: 'event' }));
+      } else {
+        console.warn('⚠️ Event not found for ID:', eventId);
+      }
+    }
+  };
+
   useEffect(() => {
 
     // Manejar notificaciones en foreground (cuando la app está abierta)
@@ -37,16 +64,7 @@ const AppContent = () => {
         [
           { text: 'Cerrar', style: 'cancel' },
           {
-            text: 'Ver', onPress: async () => {
-              if (remoteMessage.data?.eventId) {
-                const eventId = remoteMessage.data.eventId.toString();
-                console.log('🔍 Opening event from foreground alert:', eventId);
-                const event = await getEventById(eventId);
-                if (event) {
-                  dispatch(setOnOpenNotification(event));
-                }
-              }
-            }
+            text: 'Ver', onPress: () => handleNotificationOpen(remoteMessage)
           }
         ]
       );
@@ -55,22 +73,7 @@ const AppContent = () => {
     // Manejar tap en notificación cuando la app está en background
     const unsubscribeNotificationOpen = messaging().onNotificationOpenedApp(async remoteMessage => {
       console.log('📱 Background notification opened');
-      
-      if (remoteMessage.data?.eventId) {
-        const eventId = remoteMessage.data.eventId.toString();
-        console.log('🔍 Fetching event with ID:', eventId);
-        
-        const event = await getEventById(eventId);
-        console.log('✅ Event fetched:', event);
-        
-        if (event) {
-          dispatch(setOnOpenNotification(event));
-        } else {
-          console.warn('⚠️ Event not found for ID:', eventId);
-        }
-      } else {
-        console.warn('⚠️ No eventId in notification data');
-      }
+      await handleNotificationOpen(remoteMessage);
     });
 
     // Manejar SOLO cuando la app se abre por primera vez desde una notificación (killed state)
@@ -80,22 +83,7 @@ const AppContent = () => {
       .then(async remoteMessage => {
         if (remoteMessage) {
           console.log('🚀 App opened from killed state via notification');
-          
-          if (remoteMessage.data?.eventId) {
-            const eventId = remoteMessage.data.eventId.toString();
-            console.log('🔍 Fetching event with ID:', eventId);
-            
-            const event = await getEventById(eventId);
-            console.log('✅ Event fetched:', event);
-            
-            if (event) {
-              dispatch(setOnOpenNotification(event));
-            } else {
-              console.warn('⚠️ Event not found for ID:', eventId);
-            }
-          } else {
-            console.warn('⚠️ No eventId in notification data');
-          }
+          await handleNotificationOpen(remoteMessage);
         }
       });
 

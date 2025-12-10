@@ -12,17 +12,21 @@ import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
 import dayjs from 'dayjs'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
+import { clearPendingNavigation } from '../../store/slices/notificationSlice'
 
 const today = new Date()
 
 const CalendarScreen = () => {
 
   const theme = useTheme()
+  const navigation = useNavigation()
 
   const eventState = useAppSelector(state => state.eventState)
   const serviceState = useAppSelector(state => state.serviceState)
   const statusState = useAppSelector(state => state.statusState)
   const clientState = useAppSelector(state => state.clientState)
+  const notificationState = useAppSelector(state => state.notificationState)
   const dispatch = useDispatch()
 
 
@@ -32,12 +36,23 @@ const CalendarScreen = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const eventBottomSheetRef = useRef<BottomSheetModal>(null);
 
-  // Abrir bottom sheet si hay un evento seleccionado (por notificación)
+  // Listener unificado para notificaciones (eventos y recordatorios)
   useEffect(() => {
-    if (eventState.event && eventState.onNotification) {
-      eventBottomSheetRef.current?.present();
+    if (notificationState.pendingNavigation) {
+      const { screen, params, type } = notificationState.pendingNavigation;
+      console.log('📍 Executing pending navigation:', screen, type, params);
+      
+      if (type === 'event') {
+        // Abrir bottom sheet de evento
+        eventBottomSheetRef.current?.present();
+      } else if (type === 'todo_reminder') {
+        // Navegar a ReminderScreen
+        (navigation as any).navigate(screen, params);
+      }
+      
+      dispatch(clearPendingNavigation());
     }
-  }, [eventState.event, eventState.onNotification]);
+  }, [notificationState.pendingNavigation, navigation, dispatch]);
 
 
 

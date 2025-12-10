@@ -7,6 +7,7 @@ import clientReducer from './slices/clientSlice'
 import eventReducer from './slices/eventSlice'
 import todoReducer from './slices/todoSlice'
 import reminderReducer from './slices/reminderSlice'
+import notificationReducer from './slices/notificationSlice'
 
 
 export const store = configureStore({
@@ -17,7 +18,8 @@ export const store = configureStore({
         clientState: clientReducer,
         eventState: eventReducer,
         todoState: todoReducer,
-        reminderState: reminderReducer
+        reminderState: reminderReducer,
+        notificationState: notificationReducer
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
