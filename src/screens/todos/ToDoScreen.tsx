@@ -6,13 +6,14 @@ import { deleteToDo, getAllToDos, saveToDo } from '../../services/todo'
 import { setAllToDos } from '../../store/slices/todoSlice'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../../store'
-import { ToDo } from '../../interfaces/todos'
+import { saveReminder } from '../../services/reminders'
 
 const ToDoScreen = () => {
 
   const dispatch = useDispatch()
   const authState = useAppSelector(state => state.authState)
   const todos = useAppSelector(state => state.todoState.todos)
+  const reminders = useAppSelector(state => state.reminderState.reminders)
 
   const [newValue, setNewValue] = useState('')
 
@@ -35,6 +36,21 @@ const ToDoScreen = () => {
     await saveToDo({
       ...todo,
       assignedUserId: userId || undefined
+    })
+  }
+
+  // 🔵 CREATE REMINDER for TODO
+  const createReminder = async (todoId: string, date: Date) => {
+    const todo = todos.find(t => t.id === todoId)
+    if (!todo || !todo.assignedUserId) return
+
+    await saveReminder({
+      id: '',
+      todoId: todoId,
+      reminderDate: date.toISOString(),
+      userIds: [todo.assignedUserId],
+      createdAt: new Date().toISOString(),
+      sent: false
     })
   }
 
@@ -98,7 +114,8 @@ const ToDoScreen = () => {
         style={{
           backgroundColor: 'white',
           paddingVertical: 5,
-          borderRadius: 10
+          borderRadius: 10,
+          zIndex: 0
         }}
       />
 
@@ -106,6 +123,7 @@ const ToDoScreen = () => {
         .sort((a, b) => Number(a.completed) - Number(b.completed))
         .map(item => {
           const assignedUser = authState.users.find(u => u.id === item.assignedUserId)
+          const todoReminder = reminders.find(r => r.todoId === item.id && !r.sent)
           return (
             <CustomTodoItem
               key={item.id}
@@ -114,8 +132,10 @@ const ToDoScreen = () => {
               onDelete={() => handleDeleteTodo(item.id)}
               onEdit={(text) => editTodo(item.id, text)}
               onAssignUser={(userId) => assignUser(item.id, userId)}
+              onCreateReminder={(todoId, date) => createReminder(todoId, date)}
               users={authState.users.map(u => ({ id: u.id, name: u.name }))}
               assignedUserName={assignedUser?.name}
+              reminderDate={todoReminder?.reminderDate}
             />
           )
         })

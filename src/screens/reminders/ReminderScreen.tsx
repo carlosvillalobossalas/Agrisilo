@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Pressable, Keyboard, Alert } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
@@ -14,14 +14,17 @@ import dayjs from 'dayjs'
 
 const ReminderScreen = () => {
     const eventState = useAppSelector(state => state.eventState)
+    const todoState = useAppSelector(state => state.todoState)
     const authState = useAppSelector(state => state.authState)
     const reminderState = useAppSelector(state => state.reminderState)
     const dispatch = useDispatch()
     const navigation = useNavigation()
 
+    const [reminderType, setReminderType] = useState<'event' | 'todo'>('event')
     const [reminderForm, setReminderForm] = useState<IReminder>({
         id: '',
         eventId: '',
+        todoId: '',
         reminderDate: new Date().toISOString(),
         userIds: [],
         createdAt: new Date().toISOString()
@@ -29,10 +32,23 @@ const ReminderScreen = () => {
 
     const [showDatePicker, setShowDatePicker] = useState(false)
 
+    // Cargar recordatorio existente si viene desde la lista
+    useEffect(() => {
+        if (reminderState.reminder) {
+            setReminderForm(reminderState.reminder)
+            // Determinar el tipo basado en si tiene eventId o todoId
+            if (reminderState.reminder.todoId) {
+                setReminderType('todo')
+            } else if (reminderState.reminder.eventId) {
+                setReminderType('event')
+            }
+        }
+    }, [reminderState.reminder])
+
     const handleSubmit = async () => {
         // Validar que todos los campos estén completos
-        if (!reminderForm.eventId) {
-            Alert.alert('Validación', 'Debes seleccionar un evento')
+        if (!reminderForm.eventId && !reminderForm.todoId) {
+            Alert.alert('Validación', 'Debes seleccionar un evento o una tarea')
             return
         }
         
@@ -41,6 +57,7 @@ const ReminderScreen = () => {
             return
         }
         
+        // Validar que haya al menos un usuario seleccionado
         if (reminderForm.userIds.length === 0) {
             Alert.alert('Validación', 'Debes seleccionar al menos un usuario a notificar')
             return
@@ -80,23 +97,57 @@ const ReminderScreen = () => {
     return (
         <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
             <View style={{ flex: 1, paddingTop: 10, paddingBottom: 15, paddingHorizontal: 15, gap: 15 }}>
-                <CustomInputWithBottomSheet
-                    label='Evento'
-                    placeholder='Seleccione un evento'
-                    value={reminderForm.eventId}
-                    items={eventState.events.map(event => ({
-                        label: event.name,
-                        value: event.id
-                    }))}
-                    onPress={(value) => {
-                        setReminderForm(prev => ({
-                            ...prev,
-                            eventId: value
-                        }))
-                    }}
-                    icon='calendar-check'
-                    title='Eventos'
+                <TextInput
+                    label='Tipo de recordatorio'
+                    value={reminderType === 'event' ? 'Evento' : 'Tarea'}
+                    mode='outlined'
+                    disabled
+                    editable={false}
+                    right={<TextInput.Icon icon='format-list-bulleted-type' />}
                 />
+
+                {reminderType === 'event' ? (
+                    <CustomInputWithBottomSheet
+                        label='Evento'
+                        placeholder='Seleccione un evento'
+                        value={reminderForm.eventId || ''}
+                        items={eventState.events.map(event => ({
+                            label: event.name,
+                            value: event.id
+                        }))}
+                        onPress={(value) => {
+                            setReminderForm(prev => ({
+                                ...prev,
+                                eventId: value,
+                                todoId: ''
+                            }))
+                        }}
+                        icon='calendar-check'
+                        title='Eventos'
+                    />
+                ) : (
+                    <CustomInputWithBottomSheet
+                        label='Tarea'
+                        placeholder='Seleccione una tarea'
+                        value={reminderForm.todoId || ''}
+                        items={todoState.todos.map(todo => ({
+                            label: todo.description,
+                            value: todo.id
+                        }))}
+                        onPress={(value) => {
+                            const selectedTodo = todoState.todos.find(t => t.id === value)
+                            setReminderForm(prev => ({
+                                ...prev,
+                                todoId: value,
+                                eventId: '',
+                                // Pre-seleccionar el usuario asignado pero permitir cambiar
+                                userIds: selectedTodo?.assignedUserId ? [selectedTodo.assignedUserId] : []
+                            }))
+                        }}
+                        icon='checkbox-marked-circle-outline'
+                        title='Tareas'
+                    />
+                )}
 
                 <TextInput
                     label='Fecha y hora del recordatorio'
@@ -125,53 +176,75 @@ const ReminderScreen = () => {
                     onCancel={() => setShowDatePicker(false)}
                 />
 
-                <CustomMultipleInputWithBottomSheet
-                    label='Usuarios a notificar'
-                    placeholder='Seleccione usuarios'
-                    value={(() => {
-                        // Calcular qué mostrar en el input
-                        if (reminderForm.userIds.length === 0) return []
-                        const allUserIds = authState.users.map(u => u.id)
-                        const allSelected = reminderForm.userIds.length === allUserIds.length && 
-                                          allUserIds.every(id => reminderForm.userIds.includes(id))
-                        // Si todos están seleccionados, retornar solo 'all' para mostrar "Todos los usuarios"
-                        if (allSelected) return ['all']
-                        return reminderForm.userIds
-                    })()}
-                    items={[
-                        { label: 'Todos los usuarios', value: 'all' },
-                        ...authState.users.map(user => ({
-                            label: user.name,
-                            value: user.id
-                        }))
-                    ]}
-                    onPress={(value) => {
-                        if (value === 'all') {
-                            // Si selecciona "Todos", agregar todos los IDs de usuarios
+                {reminderType === 'event' && (
+                    <CustomMultipleInputWithBottomSheet
+                        label='Usuarios a notificar'
+                        placeholder='Seleccione usuarios'
+                        value={(() => {
+                            // Calcular qué mostrar en el input
+                            if (reminderForm.userIds.length === 0) return []
                             const allUserIds = authState.users.map(u => u.id)
                             const allSelected = reminderForm.userIds.length === allUserIds.length && 
-                                               allUserIds.every(id => reminderForm.userIds.includes(id))
-                            
-                            setReminderForm(prev => ({
-                                ...prev,
-                                userIds: allSelected ? [] : allUserIds
+                                              allUserIds.every(id => reminderForm.userIds.includes(id))
+                            // Si todos están seleccionados, retornar solo 'all' para mostrar "Todos los usuarios"
+                            if (allSelected) return ['all']
+                            return reminderForm.userIds
+                        })()}
+                        items={[
+                            { label: 'Todos los usuarios', value: 'all' },
+                            ...authState.users.map(user => ({
+                                label: user.name,
+                                value: user.id
                             }))
-                        } else {
-                            const selectedUsers = [...reminderForm.userIds]
-                            if (selectedUsers.includes(value)) {
-                                selectedUsers.splice(selectedUsers.indexOf(value), 1)
+                        ]}
+                        onPress={(value) => {
+                            if (value === 'all') {
+                                // Si selecciona "Todos", agregar todos los IDs de usuarios
+                                const allUserIds = authState.users.map(u => u.id)
+                                const allSelected = reminderForm.userIds.length === allUserIds.length && 
+                                                   allUserIds.every(id => reminderForm.userIds.includes(id))
+                                
+                                setReminderForm(prev => ({
+                                    ...prev,
+                                    userIds: allSelected ? [] : allUserIds
+                                }))
                             } else {
-                                selectedUsers.push(value)
+                                const selectedUsers = [...reminderForm.userIds]
+                                if (selectedUsers.includes(value)) {
+                                    selectedUsers.splice(selectedUsers.indexOf(value), 1)
+                                } else {
+                                    selectedUsers.push(value)
+                                }
+                                setReminderForm(prev => ({
+                                    ...prev,
+                                    userIds: selectedUsers
+                                }))
                             }
+                        }}
+                        icon='account-multiple'
+                        title='Usuarios'
+                    />
+                )}
+
+                {reminderType === 'todo' && (
+                    <CustomInputWithBottomSheet
+                        label='Usuario a notificar'
+                        placeholder='Seleccione un usuario'
+                        value={reminderForm.userIds[0] || ''}
+                        items={authState.users.map(user => ({
+                            label: user.name,
+                            value: user.id
+                        }))}
+                        onPress={(value) => {
                             setReminderForm(prev => ({
                                 ...prev,
-                                userIds: selectedUsers
+                                userIds: [value]
                             }))
-                        }
-                    }}
-                    icon='account-multiple'
-                    title='Usuarios'
-                />
+                        }}
+                        icon='account'
+                        title='Usuario'
+                    />
+                )}
 
                 <Button 
                     style={{ marginTop: 'auto', paddingVertical: 5 }} 

@@ -14,7 +14,7 @@ import { setAllClients } from '../store/slices/clientSlice';
 import { setAllEvents } from '../store/slices/eventSlice';
 import { setAllServices } from '../store/slices/serviceSlice';
 import { setAllStatus } from '../store/slices/statusSlice';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 import { useAppSelector } from '../store';
 import { useDispatch } from 'react-redux';
 import CalendarScreen from '../screens/calendar/CalendarScreen';
@@ -39,6 +39,8 @@ import UserScreen from '../screens/users/UserScreen';
 import UsersScreen from '../screens/users/UsersScreen';
 import RemindersScreen from '../screens/reminders/RemindersScreen';
 import ReminderScreen from '../screens/reminders/ReminderScreen';
+import { getReminders } from '../services/reminders';
+import { setAllReminders } from '../store/slices/reminderSlice';
 
 
 const AuthStack = createNativeStackNavigator({
@@ -94,7 +96,7 @@ const AppTabs = createBottomTabNavigator({
         },
         Tareas: {
             screen: ToDoScreen,
-            options: {
+            options: ({ navigation }) => ({
                 tabBarIcon: ({ focused }) => {
                     const { colors } = useTheme()
                     return (
@@ -103,8 +105,56 @@ const AppTabs = createBottomTabNavigator({
                             iconColor={focused ? colors.primary : colors.outline}
                         />
                     )
+                },
+                headerLeft: () => {
+                    const [showTooltip, setShowTooltip] = React.useState(false)
+                    const { colors } = useTheme()
+                    return (
+                        <>
+                            <IconButton 
+                                icon="information-outline" 
+                                onPress={() => setShowTooltip(!showTooltip)}
+                            />
+                            {showTooltip && (
+                                <View
+                                    style={{
+                                        position: 'absolute',
+                                        top: 50,
+                                        left: 10,
+                                        backgroundColor: colors.surface,
+                                        padding: 20,
+                                        paddingTop: 30,
+                                        paddingBottom: 25,
+                                        borderRadius: 12,
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 4 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 4,
+                                        elevation: 8,
+                                        width: 280,
+                                        zIndex: 1000
+                                    }}
+                                >
+                                    <IconButton
+                                        icon="close"
+                                        size={20}
+                                        onPress={() => setShowTooltip(false)}
+                                        style={{ position: 'absolute', top: 0, right: 2, margin: 0 }}
+                                    />
+                                    <Text style={{ fontSize: 14, color: '#333', lineHeight: 22, flexWrap: 'wrap' }}>
+                                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>💡 Cómo usar las tareas:</Text>{'\n\n'}
+                                        • Toca el texto para editar{'\n'}
+                                        • Marca el círculo para completar{'\n'}
+                                        • Desliza ← para eliminar{'\n'}
+                                        • Asigna un responsable{'\n'}
+                                        • Crea recordatorios (requiere asignación)
+                                    </Text>
+                                </View>
+                            )}
+                        </>
+                    )
                 }
-            }
+            })
         },
         Recordatorios: {
             screen: RemindersScreen,
@@ -116,6 +166,54 @@ const AppTabs = createBottomTabNavigator({
                             icon="calendar-clock-outline"
                             iconColor={focused ? colors.primary : colors.outline}
                         />
+                    )
+                },
+                headerLeft: () => {
+                    const [showTooltip, setShowTooltip] = React.useState(false)
+                    const { colors } = useTheme()
+                    return (
+                        <>
+                            <IconButton 
+                                icon="information-outline" 
+                                onPress={() => setShowTooltip(!showTooltip)}
+                            />
+                            {showTooltip && (
+                                <View
+                                    style={{
+                                        position: 'absolute',
+                                        top: 50,
+                                        left: 10,
+                                        backgroundColor: colors.surface,
+                                        padding: 20,
+                                        paddingTop: 30,
+                                        paddingBottom: 25,
+                                        borderRadius: 12,
+                                        shadowColor: '#000',
+                                        shadowOffset: { width: 0, height: 4 },
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 4,
+                                        elevation: 8,
+                                        width: 280,
+                                        zIndex: 1000
+                                    }}
+                                >
+                                    <IconButton
+                                        icon="close"
+                                        size={20}
+                                        onPress={() => setShowTooltip(false)}
+                                        style={{ position: 'absolute', top: 0, right: 2, margin: 0 }}
+                                    />
+                                    <Text style={{ fontSize: 14, color: '#333', lineHeight: 22, flexWrap: 'wrap' }}>
+                                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>💡 Recordatorios:</Text>{'\n\n'}
+                                        • 📅 Eventos: notifica a múltiples usuarios{'\n'}
+                                        • ✓ Tareas: notifica al responsable{'\n'}
+                                        • Se envían automáticamente cada 5 min{'\n'}
+                                        • Desliza ← para eliminar{'\n'}
+                                        • Usa el + para crear nuevos
+                                    </Text>
+                                </View>
+                            )}
+                        </>
                     )
                 },
                 headerRight: () => <IconButton icon={'plus'} onPress={() => navigation.navigate('ReminderScreen')} />
@@ -480,6 +578,26 @@ export default function Navigation() {
         })
         return () => unsubscribe()
     }, [])
+
+
+    useEffect(() => {
+        const unsubscribe = getReminders().onSnapshot((snapshot) => {
+            const reminders = snapshot.docs.map((doc) => {
+                const data = doc.data()
+                return {
+                    id: doc.id,
+                    eventId: data.eventId || undefined,
+                    todoId: data.todoId || undefined,
+                    reminderDate: data.reminderDate?.toDate?.() ? data.reminderDate.toDate().toISOString() : new Date(data.reminderDate).toISOString(),
+                    userIds: data.userIds ?? [],
+                    createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : new Date(data.createdAt).toISOString(),
+                    sent: data.sent ?? false
+                }
+            })
+            dispatch(setAllReminders(reminders))
+        })
+        return () => unsubscribe()
+    }, [dispatch])
 
 
     if (initializing) return null;

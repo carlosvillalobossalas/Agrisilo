@@ -116,17 +116,42 @@ exports.checkScheduledReminders = onSchedule("every 5 minutes", async (event) =>
       const reminderId = reminderDoc.id;
 
       try {
-        // Obtener información del evento
-        const eventDoc = await admin.firestore().collection("Events").doc(reminder.eventId).get();
+        // Determinar si es evento o tarea
+        let itemName, itemData, itemType, itemId;
         
-        if (!eventDoc.exists) {
-          logger.warn(`Event ${reminder.eventId} not found for reminder ${reminderId}`);
-          // Marcar como enviado para no intentar de nuevo
+        if (reminder.eventId) {
+          // Es un recordatorio de evento
+          const eventDoc = await admin.firestore().collection("Events").doc(reminder.eventId).get();
+          
+          if (!eventDoc.exists) {
+            logger.warn(`Event ${reminder.eventId} not found for reminder ${reminderId}`);
+            await reminderDoc.ref.update({ sent: true });
+            continue;
+          }
+
+          itemData = eventDoc.data();
+          itemName = itemData.name;
+          itemType = 'event';
+          itemId = reminder.eventId;
+        } else if (reminder.todoId) {
+          // Es un recordatorio de tarea
+          const todoDoc = await admin.firestore().collection("ToDos").doc(reminder.todoId).get();
+          
+          if (!todoDoc.exists) {
+            logger.warn(`Todo ${reminder.todoId} not found for reminder ${reminderId}`);
+            await reminderDoc.ref.update({ sent: true });
+            continue;
+          }
+
+          itemData = todoDoc.data();
+          itemName = itemData.description;
+          itemType = 'todo';
+          itemId = reminder.todoId;
+        } else {
+          logger.warn(`Reminder ${reminderId} has no eventId or todoId`);
           await reminderDoc.ref.update({ sent: true });
           continue;
         }
-
-        const eventData = eventDoc.data();
 
         // Obtener tokens de los usuarios especificados en el recordatorio
         const usersSnap = await admin.firestore()
@@ -147,17 +172,17 @@ exports.checkScheduledReminders = onSchedule("every 5 minutes", async (event) =>
           continue;
         }
 
-        logger.info(`Sending reminder ${reminderId} to ${validTokens.length} users`);
+        logger.info(`Sending ${itemType} reminder ${reminderId} to ${validTokens.length} users`);
 
         const message = {
           notification: {
-            title: "Recordatorio de evento",
-            body: `Recordatorio: ${eventData.name}`
+            title: itemType === 'event' ? "Recordatorio de evento" : "Recordatorio de tarea",
+            body: `Recordatorio: ${itemName}`
           },
           data: {
-            eventId: reminder.eventId,
-            type: 'reminder',
-            eventName: eventData.name,
+            [itemType === 'event' ? 'eventId' : 'todoId']: itemId,
+            type: itemType === 'event' ? 'reminder' : 'todo_reminder',
+            itemName: itemName,
             reminderId: reminderId
           }
         };

@@ -10,12 +10,14 @@ interface CustomButtonWithIconRightProps {
     children?: React.ReactNode
     style?: StyleProp<ViewStyle>
     contentStyle?: StyleProp<ViewStyle>
+    disabled?: boolean
     onPress?: () => void
 }
-const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, style, contentStyle, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
+const CustomButtonWithIconRight = ({ mode = 'elevated', label, icon, children, style, disabled = false, contentStyle, onPress, labelStyle = {} }: CustomButtonWithIconRightProps) => {
     return (
         <Button
             mode={mode}
+            disabled={disabled}
             style={{
                 borderRadius: 10,
                 width: '100%',

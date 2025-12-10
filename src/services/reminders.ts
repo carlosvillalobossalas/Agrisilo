@@ -8,7 +8,8 @@ export const saveReminder = async (reminder: IReminder) => {
         if (reminder.id) {
             // Actualizar recordatorio existente
             await remindersCollection.doc(reminder.id).update({
-                eventId: reminder.eventId,
+                eventId: reminder.eventId || null,
+                todoId: reminder.todoId || null,
                 reminderDate: firestore.Timestamp.fromDate(new Date(reminder.reminderDate)),
                 userIds: reminder.userIds,
                 createdAt: firestore.Timestamp.fromDate(new Date(reminder.createdAt))
@@ -16,7 +17,8 @@ export const saveReminder = async (reminder: IReminder) => {
         } else {
             // Crear nuevo recordatorio
             await remindersCollection.add({
-                eventId: reminder.eventId,
+                eventId: reminder.eventId || null,
+                todoId: reminder.todoId || null,
                 reminderDate: firestore.Timestamp.fromDate(new Date(reminder.reminderDate)),
                 userIds: reminder.userIds,
                 createdAt: firestore.FieldValue.serverTimestamp(),
