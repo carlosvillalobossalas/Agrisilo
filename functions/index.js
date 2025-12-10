@@ -135,7 +135,7 @@ exports.checkScheduledReminders = onSchedule("every 5 minutes", async (event) =>
           itemId = reminder.eventId;
         } else if (reminder.todoId) {
           // Es un recordatorio de tarea
-          const todoDoc = await admin.firestore().collection("ToDos").doc(reminder.todoId).get();
+          const todoDoc = await admin.firestore().collection("ToDo").doc(reminder.todoId).get();
           
           if (!todoDoc.exists) {
             logger.warn(`Todo ${reminder.todoId} not found for reminder ${reminderId}`);
@@ -211,7 +211,8 @@ exports.checkScheduledReminders = onSchedule("every 5 minutes", async (event) =>
 
         results.push({
           reminderId,
-          eventName: eventData.name,
+          itemName: itemName,
+          itemType: itemType,
           usersNotified: sendResults.filter(r => r.success).length,
           totalUsers: validTokens.length
         });
