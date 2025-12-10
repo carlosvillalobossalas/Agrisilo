@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { View, Pressable, Keyboard, Alert } from 'react-native'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+import { View, Pressable, Keyboard, Alert, TouchableOpacity } from 'react-native'
 import { Button, Text, TextInput } from 'react-native-paper'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { IReminder } from '../../interfaces/reminders'
-import { saveReminder } from '../../services/reminders'
-import { reminderLoading } from '../../store/slices/reminderSlice'
+import { saveReminder, deleteReminder } from '../../services/reminders'
+import { reminderLoading, setReminder } from '../../store/slices/reminderSlice'
 import CustomInputWithBottomSheet from '../../components/CustomInputWithBottomSheet'
 import CustomMultipleInputWithBottomSheet from '../../components/CustomMultipleInputWithBottomSheet'
 import DatePicker from 'react-native-date-picker'
 import dayjs from 'dayjs'
+import Icon from '@react-native-vector-icons/material-design-icons'
 
 const ReminderScreen = () => {
     const eventState = useAppSelector(state => state.eventState)
@@ -32,6 +33,47 @@ const ReminderScreen = () => {
 
     const [showDatePicker, setShowDatePicker] = useState(false)
 
+    const handleDelete = async () => {
+        dispatch(reminderLoading(true))
+        await deleteReminder(reminderForm.id)
+        dispatch(setReminder(null))
+        dispatch(reminderLoading(false))
+        if (!reminderState.loading) {
+            navigation.goBack()
+        }
+    }
+
+    const confirmDelete = () => {
+        Alert.alert(
+            "Eliminar recordatorio",
+            "¿Estás seguro de que deseas eliminar este recordatorio?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Eliminar", style: "destructive", onPress: handleDelete }
+            ]
+        )
+    }
+
+    // Actualizar título del header
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: reminderForm.id ? 'Modificar recordatorio' : 'Nuevo recordatorio',
+            headerRight: reminderForm.id
+                ? () => (
+                    <TouchableOpacity
+                        onPress={confirmDelete}
+                        style={{
+                            padding: 5,
+                            borderRadius: 20,
+                        }}
+                    >
+                        <Icon name="delete-outline" size={26} color="#000" />
+                    </TouchableOpacity>
+                )
+                : undefined
+        })
+    }, [navigation, reminderForm.id])
+
     // Cargar recordatorio existente si viene desde la lista
     useEffect(() => {
         if (reminderState.reminder) {
@@ -42,6 +84,9 @@ const ReminderScreen = () => {
             } else if (reminderState.reminder.eventId) {
                 setReminderType('event')
             }
+        }
+        return () => {
+            dispatch(setReminder(null))
         }
     }, [reminderState.reminder])
 
