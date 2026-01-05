@@ -582,7 +582,7 @@ export default function Navigation() {
 
     useEffect(() => {
         const unsubscribe = getReminders().onSnapshot((snapshot) => {
-            const reminders = snapshot.docs.map((doc) => {
+            const reminders = snapshot?.docs?.map((doc) => {
                 const data = doc.data()
                 return {
                     id: doc.id,

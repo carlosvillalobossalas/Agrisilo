@@ -26,9 +26,28 @@ const Login = () => {
             const user = await signIn(loginForm.email, loginForm.password)
             dispatch(loginSuccess(user))
 
-        } catch (error) {
+        } catch (error: any) {
             dispatch(loginFailure(error))
             console.error(error)
+            
+            // Mostrar mensaje de error al usuario
+            let errorMessage = 'Ocurrió un error al iniciar sesión.';
+            
+            if (error?.code === 'auth/invalid-credential' || error?.code === 'auth/wrong-password') {
+                errorMessage = 'Correo o contraseña incorrectos.';
+            } else if (error?.code === 'auth/user-not-found') {
+                errorMessage = 'No existe una cuenta con este correo.';
+            } else if (error?.code === 'auth/invalid-email') {
+                errorMessage = 'El correo electrónico no es válido.';
+            } else if (error?.code === 'auth/user-disabled') {
+                errorMessage = 'Esta cuenta ha sido deshabilitada.';
+            } else if (error?.code === 'auth/too-many-requests') {
+                errorMessage = 'Demasiados intentos fallidos. Intenta más tarde.';
+            } else if (error?.message) {
+                errorMessage = error.message;
+            }
+            
+            Alert.alert('Error de inicio de sesión', errorMessage);
         }
     }
 
@@ -66,7 +85,7 @@ const Login = () => {
                     },
                 },
             ],
-            'plain-text',
+            'default',
             '',
             'default'
         );
