@@ -85,7 +85,7 @@ const Login = () => {
                     },
                 },
             ],
-            'default',
+            'plain-text',
             '',
             'default'
         );
