@@ -38,8 +38,8 @@ const RemindersScreen = () => {
             />
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 10 }} showsVerticalScrollIndicator={false}>
                 {
-                    reminderState.reminders
-                        .filter(reminder => {
+                    reminderState?.reminders
+                        ?.filter(reminder => {
                             if (filterValue === '') return true
                             const event = eventState.events.find(e => e.id === reminder.eventId)
                             const todo = todoState.todos.find(t => t.id === reminder.todoId)
