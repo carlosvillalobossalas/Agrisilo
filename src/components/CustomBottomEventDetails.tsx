@@ -245,7 +245,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'calendar-badge-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Fecha de inicio</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.startDate).format("HH:mm DD/MM/YYYY")}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.startDate).format("DD/MM/YYYY")}</Text>
                             </View>
 
                         </View>
@@ -255,7 +255,7 @@ const CustomBottomEventDetails = ({ ref }: CustomBottomEventDetails) => {
                             <Icon source={'calendar-check-outline'} size={32} />
                             <View>
                                 <Text style={{ fontWeight: '200', fontSize: 16 }}>Fecha de fin</Text>
-                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.endDate).format("HH:mm DD/MM/YYYY")}</Text>
+                                <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{dayjs(eventDetails?.endDate).format("DD/MM/YYYY")}</Text>
                             </View>
 
                         </View>

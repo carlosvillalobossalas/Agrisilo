@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
-import { View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import CustomBottomEventDetails from '../../components/CustomBottomEventDetails'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
@@ -16,6 +16,27 @@ import { useNavigation } from '@react-navigation/native'
 import { clearPendingNavigation } from '../../store/slices/notificationSlice'
 
 const today = new Date()
+
+const CustomEventCell = ({ event, touchableOpacityProps }: any) => {
+  return (
+    <TouchableOpacity {...touchableOpacityProps} key={event.id}>
+      <View style={{ padding: 0, flex: 1 }}>
+        <Text 
+          style={{ 
+            fontSize: 12, 
+            fontWeight: 'bold',
+            color: 'white',
+            marginBottom: 2
+          }}
+          numberOfLines={1}
+        >
+          {event.title}
+        </Text>
+        {event.children}
+      </View>
+    </TouchableOpacity>
+  )
+}
 
 const CalendarScreen = () => {
 
@@ -40,8 +61,6 @@ const CalendarScreen = () => {
   useEffect(() => {
     if (notificationState.pendingNavigation) {
       const { screen, params, type } = notificationState.pendingNavigation;
-      console.log('📍 Executing pending navigation:', screen, type, params);
-      
       if (type === 'event') {
         // Abrir bottom sheet de evento
         eventBottomSheetRef.current?.present();
@@ -49,7 +68,6 @@ const CalendarScreen = () => {
         // Navegar a ReminderScreen
         (navigation as any).navigate(screen, params);
       }
-      
       dispatch(clearPendingNavigation());
     }
   }, [notificationState.pendingNavigation, navigation, dispatch]);
@@ -119,6 +137,11 @@ const CalendarScreen = () => {
         title: event.name,
         start: new Date(event.startDate),
         end: new Date(event.endDate),
+        hideHours: true,
+        children:
+          <View>
+            {event?.client && mode !== 'month' ? <Text style={{ fontSize: 11, color: 'white' }}>{clientState.clients.find(client => client.id === event.client)?.name ?? ''}</Text> : null}
+          </View>,
         color:
           eventState.config.colorBy === 'service'
             ? (event.services.length > 0 ? serviceState.services.find(
@@ -133,7 +156,7 @@ const CalendarScreen = () => {
               )?.color,
       }))
     },
-    [eventState, serviceState, statusState, clientState]
+    [eventState, serviceState, statusState, clientState, mode]
   )
 
   return (
@@ -193,6 +216,9 @@ const CalendarScreen = () => {
           backgroundColor: event.color,
           borderRadius: 6,
         })}
+        renderEvent={(event, touchableOpacityProps) => (
+          <CustomEventCell event={event} touchableOpacityProps={touchableOpacityProps} />
+        )}
         onPressEvent={(pressEvent) => {
           setDate(pressEvent.start)
           if (mode === 'month') {

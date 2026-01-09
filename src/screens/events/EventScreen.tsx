@@ -251,7 +251,7 @@ const EventScreen = () => {
                 />
                 <TextInput
                     label='Fecha de inicio'
-                    value={dayjs(eventForm.startDate).format('DD/MM/YYYY HH:mm')}
+                    value={dayjs(eventForm.startDate).format('DD/MM/YYYY')}
                     mode='outlined'
                     editable={false}
                     right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: true, endDate: false })} />}
@@ -259,6 +259,7 @@ const EventScreen = () => {
                 />
                 <DatePicker
                     locale='ES'
+                    mode='date'
                     modal
                     open={modalsForm.startDate}
                     date={new Date(eventForm.startDate)}
@@ -267,9 +268,12 @@ const EventScreen = () => {
                             startDate: false,
                             endDate: false
                         })
+                        // Establecer la hora a las 00:00:00 (primera hora del día)
+                        const startOfDay = new Date(date)
+                        startOfDay.setHours(0, 0, 0, 0)
                         setEventForm(prev => ({
                             ...prev,
-                            startDate: date.toISOString()
+                            startDate: startOfDay.toISOString()
                         }))
                     }}
                     title={'Seleccione fecha de inicio'}
@@ -284,7 +288,7 @@ const EventScreen = () => {
                 />
                 <TextInput
                     label='Fecha de fin'
-                    value={dayjs(eventForm.endDate).format('DD/MM/YYYY HH:mm')}
+                    value={dayjs(eventForm.endDate).format('DD/MM/YYYY')}
                     mode='outlined'
                     editable={false}
                     right={<TextInput.Icon icon='calendar' onPress={() => setModalsForm({ startDate: false, endDate: true })} />}
@@ -293,6 +297,7 @@ const EventScreen = () => {
                 <DatePicker
                     locale='ES'
                     modal
+                    mode='date'
                     open={modalsForm.endDate}
                     date={new Date(eventForm.endDate)}
                     onConfirm={(date) => {
@@ -300,9 +305,12 @@ const EventScreen = () => {
                             startDate: false,
                             endDate: false
                         })
+                        // Establecer la hora a las 23:59:59 (última hora del día)
+                        const endOfDay = new Date(date)
+                        endOfDay.setHours(23, 59, 59, 999)
                         setEventForm(prev => ({
                             ...prev,
-                            endDate: date.toISOString()
+                            endDate: endOfDay.toISOString()
                         }))
                     }}
                     title={'Seleccione fecha de fin'}
