@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { Keyboard, Pressable, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native-paper'
 import CustomTodoItem from '../../components/CustomTodoItem'
@@ -93,55 +93,59 @@ const ToDoScreen = () => {
   }, [])
 
   return (
-    <View style={{
-      flex: 1,
-      gap: 10,
-      paddingVertical: 20,
-      paddingHorizontal: 25,
-    }}>
+    <Pressable style={{ flex: 1 }} onPress={() => Keyboard.dismiss()}>
 
-      <TextInput
-        right={
-          <TextInput.Icon
-            icon={'plus-thick'}
-            style={{ paddingTop: 15 }}
-            onPress={handleNewTodo}
-          />
-        }
-        label={'Tarea nueva'}
-        value={newValue}
-        onChangeText={setNewValue}
-        style={{
-          backgroundColor: 'white',
-          paddingVertical: 5,
-          borderRadius: 10,
-          zIndex: 0
-        }}
-      />
+      <View style={{
+        flex: 1,
+        gap: 10,
+        paddingVertical: 20,
+        paddingHorizontal: 25,
+      }}>
 
-      {todos
-        .sort((a, b) => Number(a.completed) - Number(b.completed))
-        .map(item => {
-          const assignedUser = authState.users.find(u => u.id === item.assignedUserId)
-          const todoReminder = reminders.find(r => r.todoId === item.id && !r.sent)
-          return (
-            <CustomTodoItem
-              key={item.id}
-              item={item}
-              onToggle={() => toggleTodo(item.id)}
-              onDelete={() => handleDeleteTodo(item.id)}
-              onEdit={(text) => editTodo(item.id, text)}
-              onAssignUser={(userId) => assignUser(item.id, userId)}
-              onCreateReminder={(todoId, date) => createReminder(todoId, date)}
-              users={authState.users.map(u => ({ id: u.id, name: u.name }))}
-              assignedUserName={assignedUser?.name}
-              reminderDate={todoReminder?.reminderDate}
+        <TextInput
+          right={
+            <TextInput.Icon
+              icon={'plus-thick'}
+              style={{ paddingTop: 15 }}
+              onPress={handleNewTodo}
             />
-          )
-        })
-      }
+          }
+          label={'Tarea nueva'}
+          value={newValue}
+          onChangeText={setNewValue}
+          style={{
+            backgroundColor: 'white',
+            paddingVertical: 5,
+            borderRadius: 10,
+            zIndex: 0
+          }}
+        />
 
-    </View>
+        {todos
+          .sort((a, b) => Number(a.completed) - Number(b.completed))
+          .map(item => {
+            const assignedUser = authState.users.find(u => u.id === item.assignedUserId)
+            const todoReminder = reminders.find(r => r.todoId === item.id && !r.sent)
+            return (
+              <CustomTodoItem
+                key={item.id}
+                item={item}
+                onToggle={() => toggleTodo(item.id)}
+                onDelete={() => handleDeleteTodo(item.id)}
+                onEdit={(text) => editTodo(item.id, text)}
+                onAssignUser={(userId) => assignUser(item.id, userId)}
+                onCreateReminder={(todoId, date) => createReminder(todoId, date)}
+                users={authState.users.map(u => ({ id: u.id, name: u.name }))}
+                assignedUserName={assignedUser?.name}
+                reminderDate={todoReminder?.reminderDate}
+              />
+            )
+          })
+        }
+
+      </View>
+    </Pressable>
+
   )
 }
 
