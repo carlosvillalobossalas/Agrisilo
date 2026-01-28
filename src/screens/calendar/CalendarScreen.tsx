@@ -21,9 +21,9 @@ const CustomEventCell = ({ event, touchableOpacityProps }: any) => {
   return (
     <TouchableOpacity {...touchableOpacityProps} key={event.id}>
       <View style={{ padding: 0, flex: 1 }}>
-        <Text 
-          style={{ 
-            fontSize: 12, 
+        <Text
+          style={{
+            fontSize: 12,
             fontWeight: 'bold',
             color: 'white',
             marginBottom: 2
@@ -141,6 +141,7 @@ const CalendarScreen = () => {
         children:
           <View>
             {event?.client && mode !== 'month' ? <Text style={{ fontSize: 11, color: 'white' }}>{clientState.clients.find(client => client.id === event.client)?.name ?? ''}</Text> : null}
+            {mode !== 'month' ? <Text style={{ fontSize: 11, color: 'white' }}>{new Date(event.startDate).toLocaleDateString('es-CR')} - {new Date(event.endDate).toLocaleDateString('es-CR')}</Text> : null}
           </View>,
         color:
           eventState.config.colorBy === 'service'
