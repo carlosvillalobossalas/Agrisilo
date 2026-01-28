@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { setEventByCalendarEvent } from '../../store/slices/eventSlice'
 import { useAppSelector } from '../../store'
 import { useDispatch } from 'react-redux'
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, useWindowDimensions, View } from 'react-native'
 import CustomBottomEventDetails from '../../components/CustomBottomEventDetails'
 import CustomBottomFilterSheet from '../../components/CustomBottomFilterSheet'
 import CustomCalendarFAB from '../../components/CustomCalendarFAB'
@@ -49,6 +49,7 @@ const CalendarScreen = () => {
   const clientState = useAppSelector(state => state.clientState)
   const notificationState = useAppSelector(state => state.notificationState)
   const dispatch = useDispatch()
+  const { height: windowHeight } = useWindowDimensions()
 
 
   const [date, setDate] = useState(today)
@@ -160,6 +161,11 @@ const CalendarScreen = () => {
     [eventState, serviceState, statusState, clientState, mode]
   )
 
+  const scheduleHeight = useMemo(() => {
+    const headerOffset = 220
+    return Math.max(300, windowHeight - headerOffset)
+  }, [windowHeight])
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Header con navegación */}
@@ -207,47 +213,89 @@ const CalendarScreen = () => {
       </View>
 
       {/* Calendario */}
-      <Calendar
-        locale="es"
-        events={events}
-        date={date}
-        height={700}
-        mode={mode}
-        eventCellStyle={(event) => ({
-          backgroundColor: event.color,
-          borderRadius: 6,
-        })}
-        renderEvent={(event, touchableOpacityProps) => (
-          <CustomEventCell event={event} touchableOpacityProps={touchableOpacityProps} />
-        )}
-        onPressEvent={(pressEvent) => {
-          setDate(pressEvent.start)
-          if (mode === 'month') {
-            setMode('day')
-          } else {
+      {mode === 'schedule' ? (
+        <Calendar
+          locale="es"
+          events={events}
+          date={date}
+          height={scheduleHeight}
+          mode={mode}
+          calendarContainerStyle={{ flex: 1 }}
+          bodyContainerStyle={{ flex: 1 }}
+          eventCellStyle={(event) => ({
+            backgroundColor: event.color,
+            borderRadius: 6,
+          })}
+          renderEvent={(event, touchableOpacityProps) => (
+            <CustomEventCell event={event} touchableOpacityProps={touchableOpacityProps} />
+          )}
+          onPressEvent={(pressEvent) => {
+            setDate(pressEvent.start)
             dispatch(setEventByCalendarEvent(pressEvent.id))
             eventBottomSheetRef.current?.present()
-          }
-        }}
-        onPressCell={(pressDate) => {
-          setDate(pressDate)
-          setMode('day')
-        }}
-        theme={{
-          palette: {
-            primary: {
-              main: theme.colors.primary,
+          }}
+          onPressCell={(pressDate) => {
+            setDate(pressDate)
+            setMode('day')
+          }}
+          theme={{
+            palette: {
+              primary: {
+                main: theme.colors.primary,
+              }
             }
-          }
-        }}
-        eventMinHeightForMonthView={20}
-        maxVisibleEventCount={3}
-        moreLabel={`+{moreCount} más`}
-        showAdjacentMonths={false}
-        onSwipeEnd={(date) => {
-          setDate(date)
-        }}
-      />
+          }}
+          eventMinHeightForMonthView={20}
+          maxVisibleEventCount={3}
+          moreLabel={`+{moreCount} más`}
+          showAdjacentMonths={false}
+          onSwipeEnd={(date) => {
+            setDate(date)
+          }}
+        />
+      ) : (
+        <Calendar
+          locale="es"
+          events={events}
+          date={date}
+          height={700}
+          mode={mode}
+          eventCellStyle={(event) => ({
+            backgroundColor: event.color,
+            borderRadius: 6,
+          })}
+          renderEvent={(event, touchableOpacityProps) => (
+            <CustomEventCell event={event} touchableOpacityProps={touchableOpacityProps} />
+          )}
+          onPressEvent={(pressEvent) => {
+            setDate(pressEvent.start)
+            if (mode === 'month') {
+              setMode('day')
+            } else {
+              dispatch(setEventByCalendarEvent(pressEvent.id))
+              eventBottomSheetRef.current?.present()
+            }
+          }}
+          onPressCell={(pressDate) => {
+            setDate(pressDate)
+            setMode('day')
+          }}
+          theme={{
+            palette: {
+              primary: {
+                main: theme.colors.primary,
+              }
+            }
+          }}
+          eventMinHeightForMonthView={20}
+          maxVisibleEventCount={3}
+          moreLabel={`+{moreCount} más`}
+          showAdjacentMonths={false}
+          onSwipeEnd={(date) => {
+            setDate(date)
+          }}
+        />
+      )}
 
       {/* Filtros */}
       <CustomBottomFilterSheet ref={bottomSheetRef} handleSheetChanges={handleSheetChanges} />
